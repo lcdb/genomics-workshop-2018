@@ -1,0 +1,175 @@
+
+# Data are from GSE77625, which looked at mice fed chow or high-fat diet for 16
+# wks. H3K4me1 and H3K27ac are available as pooled called peaks for both chown
+# and hfd. H3K4me3 only available as chow. Expression data are keyed by gene
+# symbol.
+#
+#
+# DESeq2 output is keyed by gene symbol, but we need gene coords. None of the
+# TxDbs are keyed by symbol. The best we can do is Ensembl; but the
+# Ensembl-keyed TxDb is only available for mm10. The peaks are only available
+# for mm9, so we need to liftover.
+
+from textwrap import dedent
+
+bed_files = {
+
+    'GSE77625_h3k4me1_chow.bed': (
+        "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE77625&"
+        "format=file&file=GSE77625%5FH3K4me1%5FCD%5Freps%5F1%5F2%"
+        "5F3%5Fvs%5FIgG%5Fpval%5F1e%2D6%5FMACS%5Fpeaks%2Efiltered"
+        "%5Ffdr%5F10%2E0%2Ebed%2Egz"
+    ),
+
+    'GSE77625_h3k4me3_chow.bed': (
+        "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE77625&"
+        "format=file&file=GSE77625%5FH3K4me3%5Freps%5F1%5F2%5Fvs%"
+        "5FIgG%5Fpval%5F1e%2D6%5FMACS%5Fpeaks%2Efiltered%5Ffdr%5F"
+        "10%2E0%2Ebed%2Egz"
+    ),
+
+    'GSE77625_h3k27ac_chow.bed': (
+        "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE77625&"
+        "format=file&file=GSE77625%5FH3K27Ac%5FCD%5Freps%5F1%5F2%"
+        "5F3%5Fvs%5FIgG%5Fpval%5F1e%2D6%5FMACS%5Fpeaks%2Efiltered"
+        "%5Ffdr%5F10%2E0%2Ebed%2Egz"
+    ),
+
+    'GSE77625_h3k27ac_hfd.bed': (
+        "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE77625&"
+        "format=file&file=GSE77625%5FH3K27Ac%5F16wkHFD%5Freps%5F1"
+        "%5F2%5F3%5Fvs%5FIgG%5Fpval%5F1e%2D6%5FMACS%5Fpeaks%2Efil"
+        "tered%5Ffdr%5F10%2E0%2Ebed%2Egz"
+    ),
+
+    'GSE77625_h3k4me1_hfd.bed': (
+        "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE77625&"
+        "format=file&file=GSE77625%5FH3K4me1%5F16wkHFD%5Freps%5F1"
+        "%5F2%5F3%5Fvs%5FIgG%5Fpval%5F1e%2D6%5FMACS%5Fpeaks%2Efil"
+        "tered%5Ffdr%5F10%2E0%2Ebed%2Egz"
+    ),
+}
+
+
+rule all:
+    input:
+        'package.tar.gz',
+
+rule download_beds:
+    output:
+        temp('/tmp/mm9/{filename}')
+    params:
+        url=lambda wc: bed_files[wc.filename]
+    shell:
+        'wget -O- "{params.url}" | gunzip -c > {output}'
+
+
+rule download_chainfile:
+    output:
+        temp('data/extra/mm9ToMm10.over.chain.gz')
+    shell:
+        'wget -O- http://hgdownload.cse.ucsc.edu/goldenPath/mm9/liftOver/mm9ToMm10.over.chain.gz > {output}'
+
+
+rule liftover:
+    input:
+        bed='/tmp/mm9/{prefix}.bed',
+        chainfile=rules.download_chainfile.output
+    output:
+        'data/GSE77625/{prefix}.bed'
+    shell:
+        'liftOver {input.bed} {input.chainfile} {output}.tmp {output}.unmapped '
+        '&& sort -k1,1 -k2n,2 {output[0]}.tmp > {output[0]}'
+        '&& rm {output}.tmp'
+
+
+rule download_deseq:
+    output: 'data/GSE77625/GSE77625_chow-vs-HFD-deseq2_results.txt'
+    shell:
+        'wget -O- '
+        '"https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE77625&format=file&file='
+        'GSE77625%5FmRNA%5FCD%5Fvs%5F16wkHFD%5FDESeq2%5Fresults%2Etxt%2Egz" '
+        '| gunzip -c > {output}'
+
+
+# Convert DESeq2 output's gene symbols to Ensembl IDs (using OrgDb package) and
+# then look up those genes' coordinates in the TxDb package (which is keyed by
+# Ensembl ID)
+rule gene_coords_from_deseq:
+    input:
+        rules.download_deseq.output
+    output:
+        'data/extra/transcripts.bed'
+    run:
+
+        script = """
+        library(AnnotationHub)
+        library(GenomicFeatures)
+
+        ah <- AnnotationHub()
+        ah[ah$species == 'Mus musculus' & ah$rdataclass == 'OrgDb']
+        ah[ah$species == 'Mus musculus' & ah$rdataclass == 'TxDb']
+
+        orgdb <- ah[['AH57974']]
+        txdb <- ah[['AH52263']]
+
+        df <- read.table('{input[0]}')
+        symbol2ens <- select(orgdb, row.names(df), keytype='SYMBOL', columns=c('SYMBOL', 'ENSEMBL'))
+        ens2coord <- select(
+            txdb,
+            symbol2ens$ENSEMBL,
+            keytype='GENEID',
+            columns=c('TXCHROM', 'TXSTART', 'TXEND', 'GENEID', 'TXNAME', 'TXSTRAND')
+        )
+        merged <- merge(x=ens2coord, y=symbol2ens, by.x='GENEID', by.y='ENSEMBL')
+        merged['SCORE'] <- '0'
+        merged <- merged[, c('TXCHROM', 'TXSTART', 'TXEND', 'SYMBOL', 'SCORE', 'TXSTRAND', 'TXNAME', 'GENEID')]
+        merged <- merged[!is.na(merged$TXCHROM),]
+        o <- order(merged$TXCHROM, merged$TXSTART)
+        merged <- merged[o,]
+        write.table(merged, file='{output[0]}.tmp', row.names=FALSE, col.names=FALSE, sep='\\t', quote=FALSE)
+        """.format(**locals())
+
+        with open('script.R', 'w') as fout:
+            fout.write(dedent(script))
+
+        shell('Rscript script.R')
+
+        shell(
+            'sort -k1,1 -k2n,2 {output[0]}.tmp > {output[0]}'
+            '&& rm {output}.tmp '
+            '&& rm script.R'
+        )
+
+# Download the chromsizes table for mm10
+rule chromsizes:
+    output:
+        'data/extra/mm10.chromsizes'
+    shell:
+        'fetchChromSizes mm10 > {output}'
+
+rule example_bedfiles:
+    output:
+        'data/extra/x.bed',
+        'data/extra/y.bed',
+    run:
+        import pybedtools
+        pybedtools.example_bedtool('a.bed').saveas(str(output[0]))
+        pybedtools.example_bedtool('b.bed').saveas(str(output[1]))
+
+rule packages:
+    input:
+        expand('data/GSE77625/{filename}', filename=bed_files.keys()),
+        'data/extra/transcripts.bed',
+        'data/extra/mm10.chromsizes',
+        'data/extra/x.bed',
+        'data/extra/y.bed',
+    output:
+        tarball='package.tar.gz',
+        zipfile='package.zip',
+    shell:
+        'tar -czf {output.tarball} {input} '
+        '&& zip {output.zipfile} {input}'
+
+
+# vim: ft=python
