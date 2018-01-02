@@ -8,4 +8,4 @@
 | 2   | [Plotting extras](extras/ggplot2_additional/README.md)              |
 | 3   | [Genomics tools (``04_genomics-tools.rst``)](04_genomics-tools.rst) |
 
-[Additional resources](extra/resources.rst)
+[Additional resources](extras/resources.rst)
