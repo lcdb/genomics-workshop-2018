@@ -55,11 +55,9 @@ On Windows, open PuTTY. In the "Host Name (or IP address)" text box, type
 ``helix.nih.gov``. This is the address of the machine you want to connect to.
 Leave everything else as default.
 
-Then click the "Open" button.
-
-.. figure:: putty-setup.png
-
-You will be prompted for your username.
+Then click the "Open" button. You may get a warning about being sure what you
+are connecting to -- here it is OK to say OK to continue. In a new terminal
+window, you will be prompted for your username.
 
 **If you already have a helix account, use that. It is your normal NIH username
 and password**. Otherwise, use the student account we have provided you.
@@ -67,8 +65,6 @@ and password**. Otherwise, use the student account we have provided you.
 As you type the password, nothing may show up. This is normal and expected.
 Just type it and hit Enter. Once you are logged in, you will get a lot of text
 explaining how this is a government system.
-
-.. figure:: putty-logged-in.png
 
 For this workshop, the font and colors will look different from what you see on
 the Mac used by the instructors.
