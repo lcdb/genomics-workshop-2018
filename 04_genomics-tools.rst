@@ -154,21 +154,58 @@ Recap on data
 -------------
 
 - Demonstrate that peaks (or domains since this is histone mod data) don't have
-  gene IDs
+  gene IDs::
 
-- Demonstrate that we don't have a tsses file
+    $ head GSE77625/GSE77625_h3k4me3_chow.bed
+    chr1    3670401 3672727 MACS_filtered_peak_1    1035.15
+    chr1    4491528 4493999 MACS_filtered_peak_2    1440.85
+    chr1    4571176 4572360 MACS_filtered_peak_3    1393.38
+    chr1    4784173 4786416 MACS_filtered_peak_4    3100.00
+    chr1    4807096 4809645 MACS_filtered_peak_5    3100.00
+    chr1    4856979 4858869 MACS_filtered_peak_6    3100.00
+    chr1    5017846 5021206 MACS_filtered_peak_7    3100.00
+    chr1    5082648 5084029 MACS_filtered_peak_8    3100.00
+    chr1    6213756 6215799 MACS_filtered_peak_9    3100.00
+    chr1    6382408 6383469 MACS_filtered_peak_10   1113.67
 
-- Demonstrate that the deseq results don't have genomic coords
+- Demonstrate that the DESeq2 results don't have genomic coords::
 
-- Talk about the annoyances in this dataset:
+    $ head GSE77625.txt
+              baseMean          log2FoldChange     lfcSE               pvalue                 padj
+    Serpina6  5895.82500928936  2.48928902278076   0.0545379886307599  0                      0
+    Rhobtb1   3291.54687137     1.95276508740858   0.0611612877537507  1.08731956604379e-223  9.72389887912965e-220
+    Saa4      21111.1219005361  2.96047167002528   0.123787400517557   2.09907006812668e-126  1.25146557461712e-122
+    Asl       42410.5484534983  -1.72142049473088  0.0773954122626814  1.351328300561e-109    6.04246449595849e-106
+    Bhlhe40   2310.29138629314  1.99643457257362   0.0910106893881505  1.17135999139523e-106  4.190188961219e-103
+    Aacs      1422.67899510803  3.27241537853794   0.155903781676187   8.10004134319361e-98   2.41462232440602e-94
+    Got1      14865.1943802654  -2.53245801431311  0.122703727971087   1.23073925012224e-94   3.14471460395519e-91
+    Ccnd1     1305.62849727339  2.48414252966812   0.12291203459522    7.87666962994332e-91   1.76102641251458e-87
+    Dact2     579.546268731826  -2.71692983532472  0.136127448792337   1.25892024134677e-88   2.50189415963648e-85
 
-    - peaks are in mm9 coords
-    - DESeq2 output is keyed by gene symbol
-    - The R data packages that map gene ID to coordinate use Ensembl IDs, not symbol
-    - We need to map gene symbol to Ensembl ID, then use that new Ensembl ID to
-      lookup the coordinates.
-    - Talk about transcripts and genes. What we want is a file of TSSes of
-      transcripts for each gene, labeled by that gene.
+
+Talk about the annoyances in this dataset:
+
+- peaks are in mm9 coords
+- DESeq2 output is keyed by gene symbol
+- The R data packages that map gene ID to coordinate use Ensembl IDs, not symbol
+- We need to map gene symbol to Ensembl ID, then use that new Ensembl ID to
+  lookup the coordinates.
+- Talk about transcripts and genes. What we want is a file of TSSes of
+  transcripts for each gene, labeled by that gene.
+
+I've done that ahead of time, so we can use the ``transcripts.bed`` file::
+
+    $ head extra/transcripts.bed
+    chr1    3205901 3216344 Xkr4    0       -       ENSMUST00000162897      ENSMUSG00000051951
+    chr1    3206523 3215632 Xkr4    0       -       ENSMUST00000159265      ENSMUSG00000051951
+    chr1    3214482 3671498 Xkr4    0       -       ENSMUST00000070533      ENSMUSG00000051951
+    chr1    4343507 4360314 Rp1     0       -       ENSMUST00000027032      ENSMUSG00000025900
+    chr1    4490928 4496413 Sox17   0       -       ENSMUST00000027035      ENSMUSG00000025902
+    chr1    4491713 4496363 Sox17   0       -       ENSMUST00000116652      ENSMUSG00000025902
+    chr1    4773206 4785710 Mrpl15  0       -       ENSMUST00000130201      ENSMUSG00000033845
+    chr1    4773211 4785739 Mrpl15  0       -       ENSMUST00000156816      ENSMUSG00000033845
+    chr1    4774436 4785698 Mrpl15  0       -       ENSMUST00000045689      ENSMUSG00000033845
+    chr1    4776377 4785739 Mrpl15  0       -       ENSMUST00000115538      ENSMUSG00000033845
 
 
 - Point to the snakefile needed to prep these data. It was more work to prep
