@@ -389,7 +389,7 @@ Writing a vector of values to file requires a different function than the functi
 
 
 Plotting with ggplot
-====================
+--------------------
 
 - http://r4ds.had.co.nz/data-visualisation.html (**remainder of the time**)
 
