@@ -158,6 +158,9 @@ First we need a place to work. You will recall that the shell has a current work
 
 This is using the program "mkdir" to make a directory for you. You are requesting that the directory be called "experiment_29dec2017" and it will create this directory in the shell's current working directory. How can you confirm that this directory now exists?
 
+Navigating the filesystem
+-------------------------
+
 If you want to change your current directory, you can do so as follows:
 
 .. code-block:: bash
@@ -165,7 +168,54 @@ If you want to change your current directory, you can do so as follows:
 		cd experiment_29dec2017
 
 Now, what is your current working directory? What are the results when you list the contents of the current directory?
-		
+
+
+Absolute versus relative paths
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With the above command, you requested that you change your working directory to a directory called "experiment_29dec2017." You specified a "relative path" : the name of a directory relative to your current working directory.
+
+You can also specify "absolute paths" : the name of a directory relative to the very top of the filesystem. This is how the command pwd reports paths. How exactly this works varies based on the exact system you're using:
+
+	- in Windows, an absolute path will start "C:\\Users\\cpalmer\\"...
+	- in Mac OSX, an absolute path will start "/Users/cpalmer/"...
+	- in Linux, an absolute path will start "/home/cpalmer/"...
+
+Most commands in the terminal will accept either absolute or relative paths. Custom bioinformatics software has been known to be very picky about the type of path you supply, however, so note what is used in example documentation.
+
+Directory shortcuts
+~~~~~~~~~~~~~~~~~~~
+
+Typing out paths can be very cumbersome, especially if you are manually exploring a directory tree with cd. There are some shortcuts that can be used to rapidly specify directories:
+
+	- "./" : refers to the current working directory
+	- "../" : refers to the directory one level above the current working directory
+	- "~" : refers to the current user's home directory (/home/cpalmer or equivalent)
+	- "cd -" : navigate to the previous working directory
+
+What would each of the following commands (derived from http://swcarpentry.github.io/shell-novice) do?
+
+.. code-block:: bash
+
+	cd .
+	cd /
+	cd /home/cpalmer
+	cd ../../
+	cd ~
+	cd home
+	cd ~/Documents/..
+	cd
+	cd ..
+
+We used ls with no arguments earlier. What happens when you run
+
+.. code-block:: bash
+
+	cd
+
+How can you fix it? Find your way back to experiment_29dec2017/
+
+
 Retrieving data
 ---------------
 
