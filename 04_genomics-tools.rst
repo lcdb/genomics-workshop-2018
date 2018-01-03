@@ -153,8 +153,8 @@ So I **think** that the 5th column is the -10*log10(pval) of each peak region.
 Recap on data
 -------------
 
-- Demonstrate that peaks (or domains since this is histone mod data) don't have
-  gene IDs::
+Demonstrate that peaks (or domains since this is histone mod data) don't have
+gene IDs::
 
     $ head GSE77625/GSE77625_h3k4me3_chow.bed
     chr1    3670401 3672727 MACS_filtered_peak_1    1035.15
@@ -168,7 +168,9 @@ Recap on data
     chr1    6213756 6215799 MACS_filtered_peak_9    3100.00
     chr1    6382408 6383469 MACS_filtered_peak_10   1113.67
 
-- Demonstrate that the DESeq2 results don't have genomic coords::
+How many peaks are there? Which condition and which mark has the most peaks?
+
+Demonstrate that the DESeq2 results don't have genomic coords::
 
     $ head GSE77625.txt
               baseMean          log2FoldChange     lfcSE               pvalue                 padj
@@ -182,6 +184,7 @@ Recap on data
     Ccnd1     1305.62849727339  2.48414252966812   0.12291203459522    7.87666962994332e-91   1.76102641251458e-87
     Dact2     579.546268731826  -2.71692983532472  0.136127448792337   1.25892024134677e-88   2.50189415963648e-85
 
+Is this by transcript or gene? How many lines? How many transcripts/genes?
 
 Talk about the annoyances in this dataset:
 
