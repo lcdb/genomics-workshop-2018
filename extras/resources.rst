@@ -12,7 +12,8 @@ Genomics
 General
 -------
 
-- https://www.datacamp.com/community/blog/environment-variable-data-science
+- Environment variables and ``$PATH``: https://www.datacamp.com/community/blog/environment-variable-data-science
+- More in-depth BEDTools tutorial: http://quinlanlab.org/tutorials/bedtools/bedtools.html
 
 R
 -
