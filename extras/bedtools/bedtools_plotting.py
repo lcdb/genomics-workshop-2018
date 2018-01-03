@@ -135,6 +135,7 @@ def plot_and_save(*args, **kwargs):
 
 plot_and_save(filea=a, fileb=b, method='intersect')
 plot_and_save(filea=a, fileb=b, u=True, method='intersect')
+plot_and_save(filea=b, fileb=a, u=True, method='intersect')
 plot_and_save(filea=a, fileb=b, v=True, method='intersect')
 plot_and_save(filea=b, fileb=a, v=True, method='intersect')
 plot_and_save(filea=a, method='merge')
