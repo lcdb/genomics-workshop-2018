@@ -97,57 +97,60 @@ If we look closely at the BED files from GEO, they are from the MACS peak caller
     chr1    6213756 6215799 MACS_filtered_peak_9    3100.00
     chr1    6382408 6383469 MACS_filtered_peak_10   1113.67
 
-.. note::
+Side note on the 5th column
+---------------------------
 
-    What is that last column? After digging around on the GEO page, I found methods info here
-    https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2055366. In the "data
-    processing section, they say they used MACS 1.4.0rc2. This is an old version of
-    MACS, but searching for it I found the original site has a README:
-    http://liulab.dfci.harvard.edu/MACS/README.html. At the end of that README is
-    a description of "Output files". It says::
+What is that last column? After digging around on the GEO page, I found methods info here
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2055366. In the "data
+processing section, they say they used MACS 1.4.0rc2. This is an old version of
+MACS, but searching for it I found the original site has a README:
+http://liulab.dfci.harvard.edu/MACS/README.html. At the end of that README is
+a description of "Output files". It says::
 
-        Output files
+    Output files
 
-            NAME_peaks.xls is a tabular file which contains information about
-            called peaks. You can open it in excel and sort/filter using excel
-            functions. Information include: chromosome name, start position of
-            peak, end position of peak, length of peak region, peak summit position
-            related to the start position of peak region, number of tags in peak
-            region, -10*log10(pvalue) for the peak region (e.g. pvalue is 1e-10,
-            then this value should be 100), fold enrichment for this region against
-            random Poisson distribution with local lambda, FDR in percentage.
-            Coordinates in XLS is 1-based which is different with BED format.
+        NAME_peaks.xls is a tabular file which contains information about
+        called peaks. You can open it in excel and sort/filter using excel
+        functions. Information include: chromosome name, start position of
+        peak, end position of peak, length of peak region, peak summit position
+        related to the start position of peak region, number of tags in peak
+        region, -10*log10(pvalue) for the peak region (e.g. pvalue is 1e-10,
+        then this value should be 100), fold enrichment for this region against
+        random Poisson distribution with local lambda, FDR in percentage.
+        Coordinates in XLS is 1-based which is different with BED format.
 
-            NAME_peaks.bed is BED format file which contains the peak
-            locations. You can load it to UCSC genome browser or Affymetrix IGB
-            software.
+        NAME_peaks.bed is BED format file which contains the peak
+        locations. You can load it to UCSC genome browser or Affymetrix IGB
+        software.
 
-            NAME_summits.bed is in BED format, which contains the peak
-            summits locations for every peaks. The 5th column in this file
-            is the summit height of fragment pileup. If you want to find
-            the motifs at the binding sites, this file is recommended.
+        NAME_summits.bed is in BED format, which contains the peak
+        summits locations for every peaks. The 5th column in this file
+        is the summit height of fragment pileup. If you want to find
+        the motifs at the binding sites, this file is recommended.
 
-    I don't think they've converted ``NAME_peaks.xls``, because we don't have that
-    many columns. I don't think ``NAME_summits.bed`` is what we're looking at,
-    because I would expect that to be 1-bp peaks. Looking at our BED files, they
-    are definitely larger. I then downloaded the [tarball package of
-    MACS](https://github.com/downloads/taoliu/MACS/MACS-1.4.2-1.tar.gz), unpacked
-    it, and read the README there. It was different! Near the bottom of that page,
-    I found this::
+I don't think they've converted ``NAME_peaks.xls``, because we don't have that
+many columns. I don't think ``NAME_summits.bed`` is what we're looking at,
+because I would expect that to be 1-bp peaks. Looking at our BED files, they
+are definitely larger. I then downloaded the [tarball package of
+MACS](https://github.com/downloads/taoliu/MACS/MACS-1.4.2-1.tar.gz), unpacked
+it, and read the README there. It was different! Near the bottom of that page,
+I found this::
 
-         2. NAME_peaks.bed is BED format file which contains the peak
-         locations. You can load it to UCSC genome browser or Affymetrix IGB
-         software. The 5th column in this file is the -10*log10pvalue of peak
-         region.
+     2. NAME_peaks.bed is BED format file which contains the peak
+     locations. You can load it to UCSC genome browser or Affymetrix IGB
+     software. The 5th column in this file is the -10*log10pvalue of peak
+     region.
 
-         3. NAME_summits.bed is in BED format, which contains the peak summits
-         locations for every peaks. The 5th column in this file is the summit
-         height of fragment pileup. If you want to find the motifs at the
-         binding sites, this file is recommended.
+     3. NAME_summits.bed is in BED format, which contains the peak summits
+     locations for every peaks. The 5th column in this file is the summit
+     height of fragment pileup. If you want to find the motifs at the
+     binding sites, this file is recommended.
 
-    So I **think** that the 5th column is the -10*log10(pval) of each peak region.
+So I **think** that the 5th column is the -10*log10(pval) of each peak region.
 
 
+Recap on data
+-------------
 
 - Demonstrate that peaks (or domains since this is histone mod data) don't have
   gene IDs
@@ -157,6 +160,7 @@ If we look closely at the BED files from GEO, they are from the MACS peak caller
 - Demonstrate that the deseq results don't have genomic coords
 
 - Talk about the annoyances in this dataset:
+
     - peaks are in mm9 coords
     - DESeq2 output is keyed by gene symbol
     - The R data packages that map gene ID to coordinate use Ensembl IDs, not symbol
@@ -201,7 +205,7 @@ Exercise: which command could we use for getting TSSes?
 Example data
 ------------
 
-.. image:: "extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed.png"
+.. image:: extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed.png
 
 
 Use ``x.bed`` and ``y.bed``. Draw them on the board.
