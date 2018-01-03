@@ -69,16 +69,17 @@ save time, I've already lifted them over to mm10 coordinates.
 The directory structure looks like this::
 
     ├── extra                           # directory of extra files I've created
-    │   ├── mm10.chromsizes             # "chromsizes" file for mm10
-    │   ├── transcripts.bed             # BED file of transcripts in mm10
-    │   ├── x.bed                       # example BED file for teaching
-    │   └── y.bed                       # example BED file for teaching
+    │   ├── mm10.chromsizes                 # "chromsizes" file for mm10
+    │   ├── transcripts.bed                 # BED file of transcripts in mm10
+    │   ├── genes.bed                       # BED file of genes in mm10
+    │   ├── x.bed                           # example BED file for teaching
+    │   └── y.bed                           # example BED file for teaching
     └── GSE77625                        # directory of files downloaded from GEO
-        ├── GSE77625_h3k27ac_chow.bed
-        ├── GSE77625_h3k27ac_hfd.bed
-        ├── GSE77625_h3k4me1_chow.bed
-        ├── GSE77625_h3k4me1_hfd.bed
-        └── GSE77625_h3k4me3_chow.bed
+        ├── GSE77625_h3k27ac_chow.bed       # H3K27ac domains in chow
+        ├── GSE77625_h3k27ac_hfd.bed        # H3K27ac domains in HFD
+        ├── GSE77625_h3k4me1_chow.bed       # H3K4me3 domains in chow
+        ├── GSE77625_h3k4me1_hfd.bed        # H3K4me1 domains in HFD
+        └── GSE77625_h3k4me3_chow.bed       # H3K4me3 domains in chow
 
 Use `head` on each file. You can learn more about the BED format on the `UCSC
 page <https://genome.ucsc.edu/FAQ/FAQformat.html#format1>`_.
@@ -287,7 +288,8 @@ following example files:
     chr1    155     200
     chr1    800     901
 
-Intersection is very common. However, note the number of regions we get back in the result:
+Intersection is very common. However, note the number of regions we get back in
+the result. What do you think is happening here?:
 
 .. image:: extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed.png
 
@@ -331,80 +333,147 @@ intronic by subtracting exons from genes:
 .. image:: extras/bedtools/images/bedtools_subtract_-a_x.bed_-b_y.bed.png
 
 
-Enhancer-like: had H3K4me1 and H3K27ac
---------------------------------------
-When we have files with meaningful information in them, we can get interesting regions.
+Working with real data
+----------------------
+When we have files with meaningful information in them, we can get interesting
+regions. What does the following code do, in biologically-meaningful terms?
 
 .. code-block:: bash
 
-    bedtools intersect -a GSE77625/GSE77625_h3k4me1_chow.bed -b GSE77625/GSE77625_h3k27ac_chow.bed > enhancer-like_chow.bed
-    bedtools intersect -a GSE77625/GSE77625_h3k4me1_hfd.bed -b GSE77625/GSE77625_h3k27ac_hfd.bed > enhancer-like_hfd.bed
+    bedtools intersect -a GSE77625/GSE77625_h3k4me1_chow.bed -b GSE77625/GSE77625_h3k27ac_chow.bed
 
-    # Intergenic
-    bedtools intersect -a enhancer-like_chow.bed -b extra/transcripts.bed -v > intergenic_enhancer-like_chow.bed
+These commands are about to get long. Here's the same command, but wrapped on
+separate lines with a backslash. It's a way of formatting commands: bash will
+glue the lines together. It's important to have the spaces right before the
+backslashes!
+
+.. code-block:: bash
+
+    bedtools intersect \
+      -a GSE77625/GSE77625_h3k4me1_chow.bed \
+      -b GSE77625/GSE77625_h3k27ac_chow.bed
+
+We need to name the output something useful so we can refer to it later. As we
+will see, naming things can get surpisingly annoying.
+
+Let's name the output ``enhancer-like_chow.bed``;
+
+.. code-block:: bash
+
+    bedtools intersect \
+      -a GSE77625/GSE77625_h3k4me1_chow.bed \
+      -b GSE77625/GSE77625_h3k27ac_chow.bed \
+      > enhancer-like_chow.bed
+
+If you haven't done so already, you should start a new file somewhere (on your
+laptop, probably), and paste these commands into it to keep a record just like
+we did in R.
+
+Let's do some spot-checks. How many enhancer-like regions are there?
+
+Given the data I've provided and the files we've just created, how do we get
+intergenic enhancers in chow?
+
+.. code-block:: bash
+
+    bedtools intersect \
+      -a enhancer-like_chow.bed \
+      -b extra/transcripts.bed \
+      -v \
+      > intergenic_enhancer-like_chow.bed
+
+This next one took some experimenting to get right. In the interest of time,
+we're going to blindly copy this. If you're interested, you can look up the
+arguments I'm using. I found them by carefully reading the BEDTools help for
+closest, and then experimenting. Upon inspecting the output, I realized that
+only chr1 was being output. I figured out that I needed to sort the data first.
+
+.. code-block:: bash
 
     # Closest gene to each enhancer
-    bedtools closest -a intergenic_enhancer-like_chow.bed -b extra/transcripts.bed -D a -io -d > closest_genes_to_enhancer_chow.bed
+    bedtools sort -i intergenic_enhancer-like_chow.bed > intergenic_enhancer-like_chow_sorted.bed
+    bedtools sort -i extra/transcripts.bed > extra/transcripts_sorted.bed
+    bedtools closest \
+      -a intergenic_enhancer-like_chow_sorted.bed \
+      -b extra/transcripts_sorted.bed \
+      -D a \
+      -io \
+      -d \
+      > closest_genes_to_enhancer_chow.bed
 
-Gotchas
--------
-
-Sorting is important! In fact, we get a hidden error in the "closest" call.
-
-.. code-block:: bash
-
-    bedtools intersect -a GSE77625/GSE77625_h3k4me1_chow.bed -b GSE77625/GSE77625_h3k27ac_chow.bed | bedtools sort -i - > enhancer-like_chow.bed
-    bedtools intersect -a GSE77625/GSE77625_h3k4me1_hfd.bed -b GSE77625/GSE77625_h3k27ac_hfd.bed | bedtools sort -i - > enhancer-like_hfd.bed
-
-    # Intergenic
-    bedtools intersect -a enhancer-like_chow.bed -b extra/transcripts.bed -v | bedtools sort -i - > intergenic_enhancer-like_chow.bed
-
-    # Closest gene to each enhancer
-    bedtools closest -a intergenic_enhancer-like_chow.bed -b extra/transcripts.bed -D a -io -d > closest_genes_to_enhancer_chow.bed
-
-Flank to get tsses
-------------------
-
-- go through the flags for flank
-- explain chromsizes
-- explain bed file
-- explain each argument -l, -r, -s, -g, -i
-- point out that it's not documented what will happen with a zero-length flank
-  -- and highlight that undocumented features are common. Best way to figure it
-  out is to experiment.
+Now that you've run that command, inspect the output. The line for each
+enhancer has been joined to the line for each gene. The last column is from the
+``-d`` argument: it's the distance, in bp, from the gene to the enhancer.
 
 .. code-block:: bash
 
-    bedtools flank -l 1 -r 0 -s -g extra/mm10.chromsizes -i extra/transcripts.bed > tsses.bed
+    chr1  34386755  34388659  MACS_filtered_peak_47   770.33   chr1  34433121  34433199  Mir5103  0   -   ENSMUST00000175111  ENSMUSG00000092852  44463
+    chr1  36063887  36068332  MACS_filtered_peak_54   2044.04  chr1  36068400  36106446  Hs6st1   0   +   ENSMUST00000088174  ENSMUSG00000045216  69
+    chr1  36367345  36369782  MACS_filtered_peak_59   860.75   chr1  36307754  36324029  Arid5a   0   +   ENSMUST00000137906  ENSMUSG00000037447  -43317
+    chr1  36469221  36471555  MACS_filtered_peak_61   1158.24  chr1  36471620  36508764  Cnnm4    0   +   ENSMUST00000153128  ENSMUSG00000037408  66
+    chr1  37028693  37030146  MACS_filtered_peak_74   808.16   chr1  36792191  36939527  Tmem131  0   -   ENSMUST00000027290  ENSMUSG00000026116  -89167
+    chr1  39590664  39591887  MACS_filtered_peak_94   881.62   chr1  39551296  39577405  Rnf149   0   -   ENSMUST00000062525  ENSMUSG00000048234  -13260
+    chr1  40160658  40163450  MACS_filtered_peak_100  2067.60  chr1  40084768  40125219  Il1r2    0   +   ENSMUST00000027243  ENSMUSG00000026073  -35440
+    chr1  40170632  40172992  MACS_filtered_peak_101  795.17   chr1  40084768  40125219  Il1r2    0   +   ENSMUST00000027243  ENSMUSG00000026073  -45414
+    chr1  40221149  40224005  MACS_filtered_peak_102  1721.44  chr1  40225080  40316177  Il1r1    0   +   ENSMUST00000027241  ENSMUSG00000026072  1076
+    chr1  51477080  51478548  MACS_filtered_peak_113  987.53   chr1  51749765  51916071  Myo1b    0   -   ENSMUST00000046390  ENSMUSG00000018417  271218
 
-Gained H3K4me1
+
+
+Get TSSes
+---------
+
+We have transcripts, but not TSSes. Here's how to get the single 1-bp position
+just upstream of TSSes. How would you get 1kb upstream?
+
+.. code-block:: bash
+
+    bedtools flank \
+      -l 1 \
+      -r 0 \
+      -s \
+      -g extra/mm10.chromsizes \
+      -i extra/transcripts.bed \
+      > tsses.bed
+
+Gained H3K27ac
 --------------
+It's not the best way to do it, but a first-pass way of getting differential
+regions is to do the intersection between conditions.
 
-Find gained H3K4me1
+We want to find the regions that are present in HFD, but not in chow. How would
+you do this?
 
-- explain that this is NOT the best way to do differential peak calling, but 1)
-  people do it anyway, and 2) it will suffice for now. The paper did things
-  differently, and found very few differential regions.
 
 .. code-block:: bash
 
-    bedtools intersect -a GSE77625/GSE77625_h3k4me1_hfd.bed -b GSE77625/GSE77625_h3k4me1_chow.bed -v > gained_h3k4me1.bed
+    bedtools intersect \
+      -a GSE77625/GSE77625_h3k27ac_hfd.bed \
+      -b GSE77625/GSE77625_h3k27ac_chow.bed \
+      -v \
+      > gained_h3k27ac.bed
 
+The paper performed the differential region calling in a more robust way, and
+found very few differential regions. How many did we get?
 
-We won't do this due to time constraints, but how would you further restrict
-gained H3K4me1 sites to only keep those that *also* have gained H3K27ac sites?
+:Exercise: How would you further restrict gained H3K4me1 sites to only keep
+           those that *also* have gained H3K27ac sites?
 
-How would you get *lost* H3K4me1 sites? And those that also lost H3K27ac?
+:Exercise: How would you get *lost* H3K4me1 sites? And those that also lost
+           H3K27ac?
 
-TSSes with gained H3K4me1
+TSSes with gained H3K27ac
 -------------------------
-
-- explain ``-u``
-- reminder that this is how we're connecting peaks to gene IDs
+We have TSSes. We have gained H3K27ac. Now we can figure out which TSSes have
+gained H3K27ac:
 
 .. code-block:: bash
 
-    bedtools intersect -a tsses.bed -b gained_h3k4me1.bed -u > tsses_with_gained_h3k4me1.bed
+    bedtools intersect \
+      -a tsses.bed \
+      -b gained_h3k4me1.bed \
+      -u \
+      > tsses_with_gained_h3k4me1.bed
 
 Move to R
 ---------
