@@ -154,8 +154,11 @@ rule example_bedfiles:
         'data/extra/y.bed',
     run:
         import pybedtools
-        pybedtools.example_bedtool('a.bed').saveas(str(output[0]))
-        pybedtools.example_bedtool('b.bed').saveas(str(output[1]))
+        def bed4(x):
+            return pybedtools.create_interval_from_list(x[:4])
+
+        pybedtools.example_bedtool('a.bed').cut([0, 1, 2, 3]).saveas(str(output[0]))
+        pybedtools.example_bedtool('b.bed').cut([0, 1, 2]).saveas(str(output[1]))
 
 rule packages:
     input:
