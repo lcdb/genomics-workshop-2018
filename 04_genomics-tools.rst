@@ -47,8 +47,8 @@ Preparation
 Download example files
 ~~~~~~~~~~~~~~~~~~~~~~
 These are data I've prepared ahead of time that we will be using today. You can
-see how they were prepared
-[here](https://github.com/lcdb/genomics-workshop-2018/blob/master/data/Snakefile).
+see how they were prepared `here
+<https://github.com/lcdb/genomics-workshop-2018/blob/master/data/Snakefile>`_.
 
 .. code-block:: bash
 
@@ -67,7 +67,7 @@ https://www.ncbi.nlm.nih.gov/pubmed/29241556. They used mm9 coordinates. To
 save time, I've already lifted them over to mm10 coordinates.
 
 The directory structure looks like this::
-    .
+
     ├── extra                           # directory of extra files I've created
     │   ├── mm10.chromsizes             # "chromsizes" file for mm10
     │   ├── transcripts.bed             # BED file of transcripts in mm10
@@ -80,8 +80,8 @@ The directory structure looks like this::
         ├── GSE77625_h3k4me1_hfd.bed
         └── GSE77625_h3k4me3_chow.bed
 
-Use `head` on each file. You can learn more about the BED format on the [UCSC
-page](https://genome.ucsc.edu/FAQ/FAQformat.html#format1).
+Use `head` on each file. You can learn more about the BED format on the `UCSC
+page <https://genome.ucsc.edu/FAQ/FAQformat.html#format1>`_.
 
 If we look closely at the BED files from GEO, they are from the MACS peak caller::
 
@@ -100,12 +100,13 @@ If we look closely at the BED files from GEO, they are from the MACS peak caller
 Side note on the 5th column
 ---------------------------
 
-What is that last column? After digging around on the GEO page, I found methods info here
-https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2055366. In the "data
-processing section, they say they used MACS 1.4.0rc2. This is an old version of
-MACS, but searching for it I found the original site has a README:
-http://liulab.dfci.harvard.edu/MACS/README.html. At the end of that README is
-a description of "Output files". It says::
+What is that last column? After digging around on the GEO page, I found methods
+info in one of the `sample pages for that GEO
+entry <https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2055366>`_. In the
+"data processing section, they say they used MACS 1.4.0rc2. This is an old
+version of MACS, but searching for it I found the `original site has
+a README <http://liulab.dfci.harvard.edu/MACS/README.html>`_. At the end of that
+README is a description of "Output files". It says::
 
     Output files
 
@@ -131,9 +132,9 @@ a description of "Output files". It says::
 I don't think they've converted ``NAME_peaks.xls``, because we don't have that
 many columns. I don't think ``NAME_summits.bed`` is what we're looking at,
 because I would expect that to be 1-bp peaks. Looking at our BED files, they
-are definitely larger. I then downloaded the [tarball package of
-MACS](https://github.com/downloads/taoliu/MACS/MACS-1.4.2-1.tar.gz), unpacked
-it, and read the README there. It was different! Near the bottom of that page,
+are definitely larger. I then downloaded the `tarball package of MACS
+<https://github.com/downloads/taoliu/MACS/MACS-1.4.2-1.tar.gz>`_ unpacked it,
+and read the README there. It was different! Near the bottom of that page,
 I found this::
 
      2. NAME_peaks.bed is BED format file which contains the peak
