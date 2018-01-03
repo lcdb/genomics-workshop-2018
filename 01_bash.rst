@@ -173,7 +173,7 @@ Next, we want to get data. You have likely seen in publications that people have
 
 .. code-block:: bash
 
-		wget https://hpc.nih.gov/~palmercd/tutorial/Dm.CLAMP.3prRNA.bedGraph.gz
+		wget https://raw.githubusercontent.com/lcdb/genomics-workshop-2018/master/data/Dm.CLAMP.3prRNA.bedGraph.gz
 
 "wget" is a program that downloads a file from the internet according to a URL provided to it. If the download is successful, it should save the file to the current working directory.
 
