@@ -220,33 +220,90 @@ I've done that ahead of time, so we can use the ``transcripts.bed`` file::
     - We don't need to lift over DESeq2 results. Why?
 
 
-What is bedtools
-----------------
-- One example of a command-line program. Runs on Mac and Linux, not windows.
-  Only way to use it is on the command line. Why?
-- Other examples: aligning reads, extracting sequences, counting reads in regions
-- Many also have web sites but those sites often are limited. BLAST, multiple
-  alignment (clusal, muscle), HMMER
+What is BEDTools?
+-----------------
+BEDTools is a "Swiss-army knife of tools for a wide-range of genomics analysis
+tasks", especially "genome arithmetic".  Anything that has to do with genomic
+coordinates (peaks, gene regions, genomic regions of any kind) can usually be
+answered with BEDTools.
+
+- bedtools docs: http://bedtools.readthedocs.io/en/latest/index.html
+- extended tutorial: http://quinlanlab.org/tutorials/bedtools/bedtools.html
+
+
+BEDTools in context
+-------------------
+BEDTools is one example of a command-line bioinformatics program. It runs on
+Mac and Linux, but not Windows. Only way to use it is on the command line. (Why
+do you think that is?). Hence needing to know how to get around in Bash.
+
+Other command line tools align reads, extract sequences, count reads in
+regions. Still others have companion web servers, though such sites often are
+limited. BLAST, multiple alignment (clusal, muscle), HMMER are examples of
+this.
+
+Working at the command line puts you in the drivers seat, the same drivers seat
+that other bioinformaticians and the tool authors themselves use.
 
 
 Learning a new tool
 -------------------
-- Read the docs, try to get it to run. Inspect input and output.
-- Getting help (no args; ``-h``, and how this is a convention for
-  arbitrary programs)
+Learning a new tool is not trivial. You need to read the documentation (which
+may be poor or non-existent), try to get it to run. Run it on some small test
+data to get a feel for what it wants as input and what it wants as output.
 
-- Go through the commands, focusing on the "genome arithmetic" section,
-  highlighting the big ones (intersect, genomecov, subtract, merge). Don't
-  worry about details, the point is to understand what kinds of things BEDTools
-  can do, so you know where to look later.
+Getting help (no args; ``-h``, and how this is a convention for arbitrary
+programs)
 
-Exercise: which command could we use for getting TSSes?
+For learning BEDTools, we'll briefly go through the commands. The point is not
+for you to remember what command does what, but to get a feel for what *kinds
+of things* it can do. Then the next time you run across a problem, you'll think
+"that seems like something BEDTools could do" and that would give you a
+starting point for your searches.
 
+:Exercise: Which command could we use for getting upstream and downstream
+           regions of each gene?
+
+:Exercise: Assuming two files `tsses.bed` and `peaks.bed`, how would you
+           get promoters with a peak 1kb upstream of TSSes?
 
 Example data
 ------------
 
+To get a feel for the BEDTools commands we'll be using, we will be using the
+following example files:
+
+.. code-block:: bash
+
+    $ head data/extra/x.bed
+    chr1    1       100     feature1
+    chr1    100     200     feature2
+    chr1    150     500     feature3
+    chr1    900     950     feature4
+
+.. code-block:: bash
+
+    $ head data/extra/y.bed
+    chr1    155     200
+    chr1    800     901
+
 .. image:: extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed.png
+
+.. image:: extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed_-u.png
+
+.. image:: extras/bedtools/images/bedtools_intersect_-a_y.bed_-b_x.bed_-u.png
+
+.. image:: extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed_-v.png
+
+.. image:: extras/bedtools/images/bedtools_intersect_-a_y.bed_-b_x.bed_-v.png
+
+.. image:: extras/bedtools/images/bedtools_flank_-r_0_-l_10_-i_x.bed_-g_genome.chromsizes.png
+
+.. image:: extras/bedtools/images/bedtools_merge_-i_x.bed.png
+
+.. image:: extras/bedtools/images/bedtools_slop_-b_50_-i_x.bed_-g_genome.chromsizes.png
+
+.. image:: extras/bedtools/images/bedtools_subtract_-a_x.bed_-b_y.bed.png
 
 
 Use ``x.bed`` and ``y.bed``. Draw them on the board.
