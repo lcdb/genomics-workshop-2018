@@ -287,40 +287,48 @@ following example files:
     chr1    155     200
     chr1    800     901
 
+Intersection is very common. However, note the number of regions we get back in the result:
+
 .. image:: extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed.png
+
+
+Using ``-u`` keeps things in ``a`` that intersect with ``b``:
 
 .. image:: extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed_-u.png
 
+Using ``-u`` is not symmetrical: it matters which file is provided as ``a`` and
+which one as ``b``. Here we've switched them, and you can compare with the
+previous results:
+
 .. image:: extras/bedtools/images/bedtools_intersect_-a_y.bed_-b_x.bed_-u.png
+
+``-v`` means NOT. Here, "regions in ``a`` that do not intersect ``b``":
 
 .. image:: extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed_-v.png
 
+``-v`` is asymmetrical as well:
+
 .. image:: extras/bedtools/images/bedtools_intersect_-a_y.bed_-b_x.bed_-v.png
+
+Here is one we can use for getting promoters. Note that a value of zero does
+not report anything to the right. This is not actually in the documentation, it
+is something discovered by experimenting on test files!
 
 .. image:: extras/bedtools/images/bedtools_flank_-r_0_-l_10_-i_x.bed_-g_genome.chromsizes.png
 
+Merging demo:
+
 .. image:: extras/bedtools/images/bedtools_merge_-i_x.bed.png
+
+
+Slop demo:
 
 .. image:: extras/bedtools/images/bedtools_slop_-b_50_-i_x.bed_-g_genome.chromsizes.png
 
+Subtract demo. This is often used for getting regions that are constituitively
+intronic by subtracting exons from genes:
+
 .. image:: extras/bedtools/images/bedtools_subtract_-a_x.bed_-b_y.bed.png
-
-
-Use ``x.bed`` and ``y.bed``. Draw them on the board.
-
-- explain ``intersect``
-- explain ``-a`` and ``-b``, and how the order matters. Will likely need smaller files
-  for experimenting with
-- explain ``-v``
-
-.. code-block:: bash
-
-    cat x.bed
-    cat y.bed
-    bedtools intersect -a x.bed -b y.bed
-    bedtools intersect -a x.bed -b y.bed -u
-    bedtools intersect -a x.bed -b y.bed -v
-    bedtools intersect -a y.bed -b x.bed -v
 
 
 Enhancer-like: had H3K4me1 and H3K27ac
