@@ -3,82 +3,151 @@
 
 Integration
 ===========
+Today we will be working on data from
+https://www.ncbi.nlm.nih.gov/pubmed/29241556. These data are from mouse,
+looking at the effects of high-fat diet on gene expression (RNA-seq) and
+histone modifications (H3K4me1, H3K4me3, H3K27ac).
 
-.. container:: goals
+We will:
 
-    - Understand what BEDTools is used for and how to find help
+- identify candidate intergenic enhancer regions
+- identify differentially expressed genes that have enhancer marks nearby
+- run a Fisher's exact test to see if differentially upregulated genes are
+  enriched for nearby enhancer marks.
+- run a Fisher's exact test to see if differentially upregulated genes are
+  enriched for increased H3K4me3 at their promoters.
 
-    - Recognize that BEDTools is just one command-line software tool and that
-      it has lots of idiosyncracies, but it does have things in common with
-      other tools.
 
-    - Refresher on moving data back and forth between helix and laptop: Here we
-      will do all BEDTools ops on helix, all else on laptop.
+By the end of today, you will:
 
-    - Rather than do basic analysis in bash (wc, grep, cut, awk, etc) we bring
-      it into R as soon as possible.
+- Understand what BEDTools is used for and how to find help
 
-    - Identify genes whose TSSes gained H3K4me1 in a high-fat diet and that
-      were significantly upregulated.
+- Recognize that BEDTools is just one command-line software tool and that
+  it has lots of idiosyncracies, but it does have things in common with
+  other tools.
 
-    - Perform a Fisher's exact test in R to see if upregulated genes are
-      significantly associated with gain in H3K4me1.
+- Be reminded of how to move data back and forth between helix and laptop: Here
+  we will do all BEDTools ops on helix, all else on laptop.
+
+- Understand the steps to integrate genomic regions described by *location*
+  (here, histone mods identified by ChIP-seq) with experimental results
+  described by *gene name* (here, differential expression results)
+
+- Be able to follow a protocol for performing basic bioinformatics analyses
+  using BEDTools and R
+
+- Be reminded of how to plot with ggplot2 in R
+
+- Know how to perform a Fisher's exact test in R and interpret the results
+
 
 Preparation
 -----------
 
-(draw x.bed and y.bed on the board ahead of time)
-
-Downloading arbitrary files
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Download zip file from github
-
-Explain (prob on whiteboard) the flow of data. I.e, it's not going to your
-laptop. It's going straight to helix. We're not using bandwidth to the room.
-
-.. code-block:: bash
-
-    wget <url here>
-
-
-Unzipping files
-~~~~~~~~~~~~~~~
-
-Unzip into a working directory.
-
-.. code-block:: bash
-
-    unzip <filename>
-
-
-Uncompressing tarballs
+Download example files
 ~~~~~~~~~~~~~~~~~~~~~~
+These are data I've prepared ahead of time that we will be using today. You can
+see how they were prepared
+[here](https://github.com/lcdb/genomics-workshop-2018/blob/master/data/Snakefile).
 
-Same thing; maybe we should supply a zip file and a tarball?
+.. code-block:: bash
 
+    wget https://github.com/lcdb/genomics-workshop-2018/raw/master/data/package.tar.gz
+    tar -xf package.tar.gz
 
-Notes on compressed files
-~~~~~~~~~~~~~~~~~~~~~~~~~
+.. code-block:: bash
 
-Maybe just say that there are different kinds, and the way you unpack them
-depends on the kind.
-
-- ``.gz``, ``.zip``, ``.tar.gz``, ``.tar``, ``.bz2``
-
+    wget -O - "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE77625&format=file&file=GSE77625%5FmRNA%5FCD%5Fvs%5F16wkHFD%5FDESeq2%5Fresults%2Etxt%2Egz" > GSE77625.txt.gz
 
 Introspection
 ~~~~~~~~~~~~~
 
-Explain the data and where it came from, and our challenges.
+Data are from this paper, published last month:
+https://www.ncbi.nlm.nih.gov/pubmed/29241556. They used mm9 coordinates. To
+save time, I've already lifted them over to mm10 coordinates.
 
-Just published last month: https://www.ncbi.nlm.nih.gov/pubmed/29241556
+The directory structure looks like this::
+    .
+    ├── extra                           # directory of extra files I've created
+    │   ├── mm10.chromsizes             # "chromsizes" file for mm10
+    │   ├── transcripts.bed             # BED file of transcripts in mm10
+    │   ├── x.bed                       # example BED file for teaching
+    │   └── y.bed                       # example BED file for teaching
+    └── GSE77625                        # directory of files downloaded from GEO
+        ├── GSE77625_h3k27ac_chow.bed
+        ├── GSE77625_h3k27ac_hfd.bed
+        ├── GSE77625_h3k4me1_chow.bed
+        ├── GSE77625_h3k4me1_hfd.bed
+        └── GSE77625_h3k4me3_chow.bed
 
-- Head on each file. Explain BED format, and how really cols 1, 2, 3 are the
-  important ones. Other cols are wildcards and depend on the tool that created
-  them. https://github.com/taoliu/MACS is the docs for MACS2; these files are
-  5-columns, which don't match any of the descriptions. Turns out they used the
-  old MACS.
+Use `head` on each file. You can learn more about the BED format on the [UCSC
+page](https://genome.ucsc.edu/FAQ/FAQformat.html#format1).
+
+If we look closely at the BED files from GEO, they are from the MACS peak caller::
+
+    > head GSE77625/GSE77625_h3k4me3_chow.bed
+    chr1    3670401 3672727 MACS_filtered_peak_1    1035.15
+    chr1    4491528 4493999 MACS_filtered_peak_2    1440.85
+    chr1    4571176 4572360 MACS_filtered_peak_3    1393.38
+    chr1    4784173 4786416 MACS_filtered_peak_4    3100.00
+    chr1    4807096 4809645 MACS_filtered_peak_5    3100.00
+    chr1    4856979 4858869 MACS_filtered_peak_6    3100.00
+    chr1    5017846 5021206 MACS_filtered_peak_7    3100.00
+    chr1    5082648 5084029 MACS_filtered_peak_8    3100.00
+    chr1    6213756 6215799 MACS_filtered_peak_9    3100.00
+    chr1    6382408 6383469 MACS_filtered_peak_10   1113.67
+
+.. note::
+
+    What is that last column? After digging around on the GEO page, I found methods info here
+    https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2055366. In the "data
+    processing section, they say they used MACS 1.4.0rc2. This is an old version of
+    MACS, but searching for it I found the original site has a README:
+    http://liulab.dfci.harvard.edu/MACS/README.html. At the end of that README is
+    a description of "Output files". It says::
+
+        Output files
+
+            NAME_peaks.xls is a tabular file which contains information about
+            called peaks. You can open it in excel and sort/filter using excel
+            functions. Information include: chromosome name, start position of
+            peak, end position of peak, length of peak region, peak summit position
+            related to the start position of peak region, number of tags in peak
+            region, -10*log10(pvalue) for the peak region (e.g. pvalue is 1e-10,
+            then this value should be 100), fold enrichment for this region against
+            random Poisson distribution with local lambda, FDR in percentage.
+            Coordinates in XLS is 1-based which is different with BED format.
+
+            NAME_peaks.bed is BED format file which contains the peak
+            locations. You can load it to UCSC genome browser or Affymetrix IGB
+            software.
+
+            NAME_summits.bed is in BED format, which contains the peak
+            summits locations for every peaks. The 5th column in this file
+            is the summit height of fragment pileup. If you want to find
+            the motifs at the binding sites, this file is recommended.
+
+    I don't think they've converted ``NAME_peaks.xls``, because we don't have that
+    many columns. I don't think ``NAME_summits.bed`` is what we're looking at,
+    because I would expect that to be 1-bp peaks. Looking at our BED files, they
+    are definitely larger. I then downloaded the [tarball package of
+    MACS](https://github.com/downloads/taoliu/MACS/MACS-1.4.2-1.tar.gz), unpacked
+    it, and read the README there. It was different! Near the bottom of that page,
+    I found this::
+
+         2. NAME_peaks.bed is BED format file which contains the peak
+         locations. You can load it to UCSC genome browser or Affymetrix IGB
+         software. The 5th column in this file is the -10*log10pvalue of peak
+         region.
+
+         3. NAME_summits.bed is in BED format, which contains the peak summits
+         locations for every peaks. The 5th column in this file is the summit
+         height of fragment pileup. If you want to find the motifs at the
+         binding sites, this file is recommended.
+
+    So I **think** that the 5th column is the -10*log10(pval) of each peak region.
+
+
 
 - Demonstrate that peaks (or domains since this is histone mod data) don't have
   gene IDs
@@ -101,7 +170,7 @@ Just published last month: https://www.ncbi.nlm.nih.gov/pubmed/29241556
   the data than it will be to do this analysis. Also point out that this is
   usually the case.
 
-    - transcripts.bed has been creatd for you
+    - ``transcripts.bed`` has been created for you
     - BED files have been lifted over from mm9 to mm10
     - We don't need to lift over DESeq2 results. Why?
 
@@ -131,6 +200,10 @@ Exercise: which command could we use for getting TSSes?
 
 Example data
 ------------
+
+.. image:: "extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed.png"
+
+
 Use ``x.bed`` and ``y.bed``. Draw them on the board.
 
 - explain ``intersect``
