@@ -310,9 +310,9 @@ previous results:
 
 .. image:: extras/bedtools/images/bedtools_intersect_-a_y.bed_-b_x.bed_-v.png
 
-Here is one we can use for getting promoters. Note that a value of zero does
-not report anything to the right. This is not actually in the documentation, it
-is something discovered by experimenting on test files!
+Here is one we can use for getting promoters. Note that a value of zero  (``-r
+0``) does not report anything to the right. This is not actually in the
+documentation, it is something discovered by experimenting on test files!
 
 .. image:: extras/bedtools/images/bedtools_flank_-r_0_-l_10_-i_x.bed_-g_genome.chromsizes.png
 
