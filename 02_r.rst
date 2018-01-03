@@ -489,7 +489,7 @@ A vector can also contain characters. Create another vector called `species` wit
    species <- c("ecoli", "human", "corn")
    species
 
-
+---
 
    **Exercise**
 
