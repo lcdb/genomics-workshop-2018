@@ -6,7 +6,8 @@ Integration
 Today we will be working on data from
 https://www.ncbi.nlm.nih.gov/pubmed/29241556. These data are from mouse,
 looking at the effects of high-fat diet on gene expression (RNA-seq) and
-histone modifications (H3K4me1, H3K4me3, H3K27ac).
+histone modifications (H3K4me1, H3K4me3, H3K27ac). The data are available on
+GEO, `GSE77625 <https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=gse77625>`_.
 
 We will:
 
@@ -98,6 +99,59 @@ If we look closely at the BED files from GEO, they are from the MACS peak caller
     chr1    6213756 6215799 MACS_filtered_peak_9    3100.00
     chr1    6382408 6383469 MACS_filtered_peak_10   1113.67
 
+
+Spot-checking in the Genome Browser
+-----------------------------------
+Let's spot-check a couple of these in the UCSC Genome Browser. We can't upload
+directly from Helix to UCSC; that would require opening a web browser on Helix.
+Instead we have to transfer to laptop, open a browser on the laptop, and upload
+through that browser. **However**, uploading files without track lines
+overwrites previous files.
+
+:Demo: show how uploading different custom tracks without "track lines"
+       overwrites previous files
+
+How to fix this? Option 1: from the command line. Here is a command that will
+add a new line to the top of a file. Three new things here:
+
+- ``echo`` (prints text)
+- ``cat`` (prints a file)
+- ``>>`` (appends, rather than replaces)
+
+.. code-block:: bash
+
+    echo "type the new line here" > new_file
+    cat existing_file >> new_file
+
+So:
+
+.. code-block:: bash
+
+    echo "track name='H3K27ac chow'" > labeled_h3k27ac_chow.bed
+    cat GSE77625/GSE77625_h3k27ac_chow >> labeled_h3k27ac_chow.bed
+
+Alternatively, you can use a text editor like TextEdit (Mac) or Notepad++
+(Windows). If you don't have these installed, use RStudio as a text editor.
+Transfer the BED file to your laptop and open it from RStudio. Add the track
+line to the top. **Be sure to save as a new file!**
+
+:Question: What is the advantage of doing this from the command line?
+
+In your work, you may come across many different kinds of files that you might
+want to look at in the genome browser. Many times these will require fixing the
+file in some way. If you're lucky, the file will be in the right assembly and
+will be in one of the `formats supported by UCSC
+<http://genome.ucsc.edu/FAQ/FAQformat.html>`_. In many cases, you can jump
+through enough hoops to convert the file into a 3-column BED file (chrom,
+start, stop) to visualize.
+
+:Question: Can we look at the DESeq2 results in the genome browser? Why or why
+           not?
+
+You can check out the `track documentation on UCSC
+<http://genome.ucsc.edu/goldenPath/help/customTrack.html>`_ to see what other
+things you can put in the track line (e.g., color, description, visibility).
+
 Side note on the 5th column
 ---------------------------
 
@@ -150,12 +204,11 @@ I found this::
 
 So I **think** that the 5th column is the -10*log10(pval) of each peak region.
 
-
 Recap on data
 -------------
 
-Demonstrate that peaks (or domains since this is histone mod data) don't have
-gene IDs::
+Note that peaks (or domains since this is histone mod data) have genomic
+coordinates but don't have gene IDs::
 
     $ head GSE77625/GSE77625_h3k4me3_chow.bed
     chr1    3670401 3672727 MACS_filtered_peak_1    1035.15
@@ -172,7 +225,7 @@ gene IDs::
 :Question: How many peaks are there? Which condition and which mark has the
            most peaks?
 
-Demonstrate that the DESeq2 results don't have genomic coords::
+Note that DESeq2 results have gene IDs, but don't have genomic coordinates::
 
     $ head GSE77625.txt
               baseMean          log2FoldChange     lfcSE               pvalue                 padj
@@ -186,21 +239,35 @@ Demonstrate that the DESeq2 results don't have genomic coords::
     Ccnd1     1305.62849727339  2.48414252966812   0.12291203459522    7.87666962994332e-91   1.76102641251458e-87
     Dact2     579.546268731826  -2.71692983532472  0.136127448792337   1.25892024134677e-88   2.50189415963648e-85
 
-:Question: Is this by transcript or gene?
-
+:Question: Is this data organized by transcript or gene?
 :Question: How many lines? How many transcripts/genes?
 
-Talk about the annoyances in this dataset:
+Often we want to know "which genes are bound by a protein", and that's what
+we'll be figuring out. But first we need gene coordinates, or better,
+transcript coordinates. There are many ways of doing this, none of them
+straightforward. Most coordinates are provided for Ensembl or RefSeq IDs, but
+the authors only provided gene symbol which complicates things.
 
-- peaks are in mm9 coords
-- DESeq2 output is keyed by gene symbol
-- The R data packages that map gene ID to coordinate use Ensembl IDs, not symbol
-- We need to map gene symbol to Ensembl ID, then use that new Ensembl ID to
-  lookup the coordinates.
-- Talk about transcripts and genes. What we want is a file of TSSes of
-  transcripts for each gene, labeled by that gene.
+Common sources for coordinates:
 
-I've done that ahead of time, so we can use the ``transcripts.bed`` file::
+- `UCSC Table Browser
+<https://genome.ucsc.edu/goldenPath/help/hgTablesHelp.html>`_ (requires
+navigating the interface, and finding by trial-and-error one of the table that
+has gene IDs in the right format)
+
+- `GENCODE <https://www.gencodegenes.org>`_ (data are in GTF format, which can
+be quite difficult to parse)
+
+- `Ensembl BioMart <http://ensembl.org/biomart/martview>`_ (requires navigating
+the interface; download data require reformatting to be useful)
+
+- `BioConductor AnnotationHub
+<https://bioconductor.org/packages/release/bioc/html/AnnotationHub.html>`_
+(requires quite a bit of R knowledge)
+
+To save time, I've done this in advance (in `this file
+<https://github.com/lcdb/genomics-workshop-2018/blob/master/data/Snakefile>`_,
+if you're interested). The results are in the ``transcripts.bed`` file::
 
     $ head extra/transcripts.bed
     chr1    3205901 3216344 Xkr4    0       -       ENSMUST00000162897      ENSMUSG00000051951
@@ -387,8 +454,9 @@ Let's do some spot-checks . . .
 :Question: Is this more or less than we expect?
 :Question: How do we know if we got the commands right?
 
-Given the data I've provided and the files we've just created, how do we get
-intergenic enhancers in chow?
+:Exercise: Given the data I've provided and the files we've just created, how
+           do we get intergenic enhancers in chow? (Check ``ls`` again for
+           a reminder of what's available)
 
 .. code-block:: bash
 
@@ -398,7 +466,13 @@ intergenic enhancers in chow?
       -v \
       > intergenic_enhancer-like_chow.bed
 
-This next one took some experimenting to get right. In the interest of time,
+:Question: Compared to our previous results, how many do we expect in the
+           output (and why?)
+
+
+
+
+The following command get the genes that are closest to each enhancer. While there is a ``bedtools closest`` command, it This next one took some experimenting to get right. In the interest of time,
 we're going to blindly copy this. If you're interested, you can look up the
 arguments I'm using. I found them by carefully reading the BEDTools help for
 closest, and then experimenting. Upon inspecting the output, I realized that
