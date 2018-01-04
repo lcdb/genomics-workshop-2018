@@ -169,7 +169,8 @@ gene IDs::
     chr1    6213756 6215799 MACS_filtered_peak_9    3100.00
     chr1    6382408 6383469 MACS_filtered_peak_10   1113.67
 
-How many peaks are there? Which condition and which mark has the most peaks?
+:Question: How many peaks are there? Which condition and which mark has the
+           most peaks?
 
 Demonstrate that the DESeq2 results don't have genomic coords::
 
@@ -185,7 +186,9 @@ Demonstrate that the DESeq2 results don't have genomic coords::
     Ccnd1     1305.62849727339  2.48414252966812   0.12291203459522    7.87666962994332e-91   1.76102641251458e-87
     Dact2     579.546268731826  -2.71692983532472  0.136127448792337   1.25892024134677e-88   2.50189415963648e-85
 
-Is this by transcript or gene? How many lines? How many transcripts/genes?
+:Question: Is this by transcript or gene?
+
+:Question: How many lines? How many transcripts/genes?
 
 Talk about the annoyances in this dataset:
 
@@ -218,7 +221,9 @@ I've done that ahead of time, so we can use the ``transcripts.bed`` file::
 
     - ``transcripts.bed`` has been created for you
     - BED files have been lifted over from mm9 to mm10
-    - We don't need to lift over DESeq2 results. Why?
+    - We don't need to lift over DESeq2 results.
+
+:Question: Why don't we need to lift over DESeq2 results to mm10?
 
 
 What is BEDTools?
@@ -235,8 +240,11 @@ answered with BEDTools.
 BEDTools in context
 -------------------
 BEDTools is one example of a command-line bioinformatics program. It runs on
-Mac and Linux, but not Windows. Only way to use it is on the command line. (Why
-do you think that is?). Hence needing to know how to get around in Bash.
+Mac and Linux, but not Windows. Only way to use it is on the command line,
+hence needing to know how to get around in Bash.
+
+:Question: Why do you think the only way to use most bioinformatics programs is
+           from the command line?
 
 Other command line tools align reads, extract sequences, count reads in
 regions. Still others have companion web servers, though such sites often are
@@ -289,7 +297,9 @@ following example files:
     chr1    800     901
 
 Intersection is very common. However, note the number of regions we get back in
-the result. What do you think is happening here?:
+the result.
+
+:Question: Why do you think there are two regions returned near the 200 bp mark?:
 
 .. image:: extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed.png
 
@@ -336,7 +346,9 @@ intronic by subtracting exons from genes:
 Working with real data
 ----------------------
 When we have files with meaningful information in them, we can get interesting
-regions. What does the following code do, in biologically-meaningful terms?
+regions. 
+
+:Question: What does the following code do, in biologically-meaningful terms?
 
 .. code-block:: bash
 
@@ -366,10 +378,14 @@ Let's name the output ``enhancer-like_chow.bed``;
       > enhancer-like_chow.bed
 
 If you haven't done so already, you should start a new file somewhere (on your
-laptop, probably), and paste these commands into it to keep a record just like
-we did in R.
+laptop probably, and maybe in a separate file in RStudio). Paste these commands
+into it to keep a record just like we did in R.
 
-Let's do some spot-checks. How many enhancer-like regions are there?
+Let's do some spot-checks . . .
+
+:Question: How many enhancer-like regions are there?
+:Question: Is this more or less than we expect?
+:Question: How do we know if we got the commands right?
 
 Given the data I've provided and the files we've just created, how do we get
 intergenic enhancers in chow?
@@ -471,13 +487,13 @@ gained H3K27ac:
 
     bedtools intersect \
       -a tsses.bed \
-      -b gained_h3k4me1.bed \
+      -b gained_h3k27ac.bed \
       -u \
-      > tsses_with_gained_h3k4me1.bed
+      > tsses_with_gained_h3k27ac.bed
 
 Move to R
 ---------
-
+Back on your laptop, create a new R project directory. Move the data files from helix that you just created.
 This will likely be on laptops. So we need to set up file transfer from helix.
 
 See https://hpc.nih.gov/docs/transfer.html, we should require Filezilla to be
