@@ -266,6 +266,12 @@ Get all lines containing a given character string, regardless of case:
 
 		grep -i "casE INSensitivE STRing" [filename]
 
+Get all lines NOT containing a given character string:
+
+.. code-block:: bash
+
+		grep -v "thing to exclude" [filename]
+
 Get all lines containing a given character string, along with the two lines preceding and three lines trailing each match:
 
 .. code-block:: bash
