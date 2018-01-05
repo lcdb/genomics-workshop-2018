@@ -41,6 +41,10 @@ By the end of today, you will:
 
 - Know how to perform a Fisher's exact test in R and interpret the results
 
+This is a LOT of information. We may not get through all of it, and it is
+unlikely that you will retain everything just from seeing it once! *That's OK.*
+Follow along to get a feel for it, and you can go back through on your own time
+using your own notes as well as the content we provide.
 
 Preparation
 -----------
@@ -241,33 +245,34 @@ Note that DESeq2 results have gene IDs, but don't have genomic coordinates::
 
 :Question: Is this data organized by transcript or gene?
 :Question: How many lines? How many transcripts/genes?
+:Question: Why don't we need to lift over DESeq2 results to mm10?
 
 Often we want to know "which genes are bound by a protein", and that's what
-we'll be figuring out. But first we need gene coordinates, or better,
+we'll be figuring out. To do this, we need gene coordinates, or better,
 transcript coordinates. There are many ways of doing this, none of them
 straightforward. Most coordinates are provided for Ensembl or RefSeq IDs, but
 the authors only provided gene symbol which complicates things.
 
 Common sources for coordinates:
 
-- `UCSC Table Browser
-<https://genome.ucsc.edu/goldenPath/help/hgTablesHelp.html>`_ (requires
-navigating the interface, and finding by trial-and-error one of the table that
-has gene IDs in the right format)
+- The `UCSC Table Browser <https://genome.ucsc.edu/goldenPath/help/hgTablesHelp.html>`_
+  (requires navigating the interface, and finding by trial-and-error one of the
+  table that has gene IDs in the right format)
 
 - `GENCODE <https://www.gencodegenes.org>`_ (data are in GTF format, which can
-be quite difficult to parse)
+  be quite difficult to parse)
 
 - `Ensembl BioMart <http://ensembl.org/biomart/martview>`_ (requires navigating
-the interface; download data require reformatting to be useful)
+  the interface; download data require reformatting to be useful)
 
-- `BioConductor AnnotationHub
-<https://bioconductor.org/packages/release/bioc/html/AnnotationHub.html>`_
-(requires quite a bit of R knowledge)
+- `BioConductor AnnotationHub <https://bioconductor.org/packages/release/bioc/html/AnnotationHub.html>`_
+  (requires quite a bit of R knowledge)
 
 To save time, I've done this in advance (in `this file
 <https://github.com/lcdb/genomics-workshop-2018/blob/master/data/Snakefile>`_,
-if you're interested). The results are in the ``transcripts.bed`` file::
+if you're interested). In fact, the preparation may be about as much effort as
+the actual analysis! This is not uncommon. The results are in the
+``extra/transcripts.bed`` file::
 
     $ head extra/transcripts.bed
     chr1    3205901 3216344 Xkr4    0       -       ENSMUST00000162897      ENSMUSG00000051951
@@ -281,16 +286,7 @@ if you're interested). The results are in the ``transcripts.bed`` file::
     chr1    4774436 4785698 Mrpl15  0       -       ENSMUST00000045689      ENSMUSG00000033845
     chr1    4776377 4785739 Mrpl15  0       -       ENSMUST00000115538      ENSMUSG00000033845
 
-
-- Point to the snakefile needed to prep these data. It was more work to prep
-  the data than it will be to do this analysis. Also point out that this is
-  usually the case.
-
-    - ``transcripts.bed`` has been created for you
-    - BED files have been lifted over from mm9 to mm10
-    - We don't need to lift over DESeq2 results.
-
-:Question: Why don't we need to lift over DESeq2 results to mm10?
+:Question: What are the columns? Is this a standard BED file?
 
 
 What is BEDTools?
@@ -298,11 +294,13 @@ What is BEDTools?
 BEDTools is a "Swiss-army knife of tools for a wide-range of genomics analysis
 tasks", especially "genome arithmetic".  Anything that has to do with genomic
 coordinates (peaks, gene regions, genomic regions of any kind) can usually be
-answered with BEDTools.
+answered with BEDTools. Using BEDTools is sort of like running a gel. It's a
+general tool that's commonly used, and can give you some very interesting
+results -- but you have to put the right information into it and make sure
+you're getting out what you expect.
 
 - bedtools docs: http://bedtools.readthedocs.io/en/latest/index.html
 - extended tutorial: http://quinlanlab.org/tutorials/bedtools/bedtools.html
-
 
 BEDTools in context
 -------------------
@@ -328,14 +326,108 @@ Learning a new tool is not trivial. You need to read the documentation (which
 may be poor or non-existent), try to get it to run. Run it on some small test
 data to get a feel for what it wants as input and what it wants as output.
 
-Getting help (no args; ``-h``, and how this is a convention for arbitrary
-programs)
+We saw ``man`` as a way of getting help. This is usually for built-in Linux
+command line tools. Bioinformatics tools rarely integrate into the ``man``
+system. So instead, try getting help by running the program with no args, or
+try ``--help`` or ``-h``. This is just a convention; some programs do not
+behave nicely!
 
-For learning BEDTools, we'll briefly go through the commands. The point is not
-for you to remember what command does what, but to get a feel for what *kinds
-of things* it can do. Then the next time you run across a problem, you'll think
-"that seems like something BEDTools could do" and that would give you a
-starting point for your searches.
+We will start learning BEDTools by briefly go through the commands. The point
+is *not* for you to remember what command does what, but to get a feel for what
+*kinds of things* it can do. Then the next time you run across a problem,
+you'll think "that seems like something BEDTools could do" and that will give
+you a starting point for your searches. It may also give you ideas about what
+you can do with your own data.
+
+On Helix, many tools are installed, but we have to enable them first. They are
+in "modules", and we need to load the module we want:
+
+.. code-block::
+
+    module load bedtools
+
+This will be enabled as long as we are still connected to Helix during this
+session, or we explicitly say ``module unload bedtools``.
+
+See https://hpc.nih.gov/apps for available programs. For example, `here's
+the page for bedtools <https://hpc.nih.gov/apps/bedtools.html>`_.
+
+.. code-block:: bash
+
+    bedtools
+
+::
+
+    bedtools: flexible tools for genome arithmetic and DNA sequence analysis.
+    usage:    bedtools <subcommand> [options]
+
+    The bedtools sub-commands include:
+
+    [ Genome arithmetic ]
+        intersect     Find overlapping intervals in various ways.
+        window        Find overlapping intervals within a window around an interval.
+        closest       Find the closest, potentially non-overlapping interval.
+        coverage      Compute the coverage over defined intervals.
+        map           Apply a function to a column for each overlapping interval.
+        genomecov     Compute the coverage over an entire genome.
+        merge         Combine overlapping/nearby intervals into a single interval.
+        cluster       Cluster (but don't merge) overlapping/nearby intervals.
+        complement    Extract intervals _not_ represented by an interval file.
+        shift         Adjust the position of intervals.
+        subtract      Remove intervals based on overlaps b/w two files.
+        slop          Adjust the size of intervals.
+        flank         Create new intervals from the flanks of existing intervals.
+        sort          Order the intervals in a file.
+        random        Generate random intervals in a genome.
+        shuffle       Randomly redistrubute intervals in a genome.
+        sample        Sample random records from file using reservoir sampling.
+        spacing       Report the gap lengths between intervals in a file.
+        annotate      Annotate coverage of features from multiple files.
+
+    [ Multi-way file comparisons ]
+        multiinter    Identifies common intervals among multiple interval files.
+        unionbedg     Combines coverage intervals from multiple BEDGRAPH files.
+
+    [ Paired-end manipulation ]
+        pairtobed     Find pairs that overlap intervals in various ways.
+        pairtopair    Find pairs that overlap other pairs in various ways.
+
+    [ Format conversion ]
+        bamtobed      Convert BAM alignments to BED (& other) formats.
+        bedtobam      Convert intervals to BAM records.
+        bamtofastq    Convert BAM records to FASTQ records.
+        bedpetobam    Convert BEDPE intervals to BAM records.
+        bed12tobed6   Breaks BED12 intervals into discrete BED6 intervals.
+
+    [ Fasta manipulation ]
+        getfasta      Use intervals to extract sequences from a FASTA file.
+        maskfasta     Use intervals to mask sequences from a FASTA file.
+        nuc           Profile the nucleotide content of intervals in a FASTA file.
+
+    [ BAM focused tools ]
+        multicov      Counts coverage from multiple BAMs at specific intervals.
+        tag           Tag BAM alignments based on overlaps with interval files.
+
+    [ Statistical relationships ]
+        jaccard       Calculate the Jaccard statistic b/w two sets of intervals.
+        reldist       Calculate the distribution of relative distances b/w two files.
+        fisher        Calculate Fisher statistic b/w two feature files.
+
+    [ Miscellaneous tools ]
+        overlap       Computes the amount of overlap from two intervals.
+        igv           Create an IGV snapshot batch script.
+        links         Create a HTML page of links to UCSC locations.
+        makewindows   Make interval "windows" across a genome.
+        groupby       Group by common cols. & summarize oth. cols. (~ SQL "groupBy")
+        expand        Replicate lines based on lists of values in columns.
+        split         Split a file into multiple files with equal records or base pairs.
+
+    [ General help ]
+        --help        Print this help menu.
+        --version     What version of bedtools are you using?.
+        --contact     Feature requests, bugs, mailing lists, etc.
+
+
 
 :Exercise: Which command could we use for getting upstream and downstream
            regions of each gene?
@@ -363,15 +455,19 @@ following example files:
     chr1    155     200
     chr1    800     901
 
-Intersection is very common. However, note the number of regions we get back in
-the result.
+Intersection is probably the most commonly-used tool. However, note the number
+of regions we get back in the result.
 
 :Question: Why do you think there are two regions returned near the 200 bp mark?:
 
 .. image:: extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed.png
 
+Using ``-u`` keeps things in ``a`` that intersect with ``b``. Quoting from the
+help::
 
-Using ``-u`` keeps things in ``a`` that intersect with ``b``:
+    -u      Write the original A entry _once_ if _any_ overlaps found in B.
+            - In other words, just report the fact >=1 hit was found.
+            - Overlaps restricted by -f and -r.
 
 .. image:: extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed_-u.png
 
@@ -381,7 +477,10 @@ previous results:
 
 .. image:: extras/bedtools/images/bedtools_intersect_-a_y.bed_-b_x.bed_-u.png
 
-``-v`` means NOT. Here, "regions in ``a`` that do not intersect ``b``":
+``-v`` means NOT. Here, "regions in ``a`` that do not intersect ``b``". From the help::
+
+    -v      Only report those entries in A that have _no overlaps_ with B.
+            - Similar to "grep -v" (an homage).
 
 .. image:: extras/bedtools/images/bedtools_intersect_-a_x.bed_-b_y.bed_-v.png
 
@@ -413,7 +512,7 @@ intronic by subtracting exons from genes:
 Working with real data
 ----------------------
 When we have files with meaningful information in them, we can get interesting
-regions. 
+regions.
 
 :Question: What does the following code do, in biologically-meaningful terms?
 
@@ -424,7 +523,8 @@ regions.
 These commands are about to get long. Here's the same command, but wrapped on
 separate lines with a backslash. It's a way of formatting commands: bash will
 glue the lines together. It's important to have the spaces right before the
-backslashes!
+backslashes! If you're typing this in, you can put it all in one line and skip
+using the backslashes. This is mostly formatting for display.
 
 .. code-block:: bash
 
@@ -469,31 +569,35 @@ Let's do some spot-checks . . .
 :Question: Compared to our previous results, how many do we expect in the
            output (and why?)
 
+The following command gets the genes that are closest to each enhancer. This
+next one took some experimenting to get right. In the interest of time, we're
+going to blindly copy this. If you're interested, you can look up the arguments
+I'm using. I found them by carefully reading the BEDTools help for closest, and
+then experimenting and checking the output each time to make sure it made
+sense. Upon inspecting the output, I realized that only chr1 was being output.
+I figured out that I needed to sort the data first.
 
-
-
-The following command get the genes that are closest to each enhancer. While there is a ``bedtools closest`` command, it This next one took some experimenting to get right. In the interest of time,
-we're going to blindly copy this. If you're interested, you can look up the
-arguments I'm using. I found them by carefully reading the BEDTools help for
-closest, and then experimenting. Upon inspecting the output, I realized that
-only chr1 was being output. I figured out that I needed to sort the data first.
+- ``-D b``: for each item in A, report the distance to B. Negative values
+  report "upstream". ``b`` means that when B is on the ``-`` strand, "upstream"
+  means A has a higher start/stop position.
 
 .. code-block:: bash
 
-    # Closest gene to each enhancer
+    # First sort by chromosome and then start position:
     bedtools sort -i intergenic_enhancer-like_chow.bed > intergenic_enhancer-like_chow_sorted.bed
     bedtools sort -i extra/transcripts.bed > extra/transcripts_sorted.bed
+
+    # Then get the closest genes
     bedtools closest \
       -a intergenic_enhancer-like_chow_sorted.bed \
       -b extra/transcripts_sorted.bed \
-      -D a \
-      -io \
-      -d \
-      > closest_genes_to_enhancer_chow.bed
+      -D b \
+      > closest_transcripts_to_enhancer_chow.bed
 
-Now that you've run that command, inspect the output. The line for each
-enhancer has been joined to the line for each gene. The last column is from the
-``-d`` argument: it's the distance, in bp, from the gene to the enhancer.
+Now that you've run that command, inspect the output. Note how the line for
+each enhancer has been joined to the line for each gene. The last column is
+from the ``-D b`` argument: it's the distance, in bp, from the gene to the
+enhancer.
 
 .. code-block:: bash
 
@@ -508,13 +612,13 @@ enhancer has been joined to the line for each gene. The last column is from the
     chr1  40221149  40224005  MACS_filtered_peak_102  1721.44  chr1  40225080  40316177  Il1r1    0   +   ENSMUST00000027241  ENSMUSG00000026072  1076
     chr1  51477080  51478548  MACS_filtered_peak_113  987.53   chr1  51749765  51916071  Myo1b    0   -   ENSMUST00000046390  ENSMUSG00000018417  271218
 
-
+So: we have a file containing the intergenic enhancers and which gene is closest to them.
 
 Get TSSes
 ---------
 
 We have transcripts, but not TSSes. Here's how to get the single 1-bp position
-just upstream of TSSes. How would you get 1kb upstream?
+just upstream of TSSes. 
 
 .. code-block:: bash
 
@@ -526,14 +630,14 @@ just upstream of TSSes. How would you get 1kb upstream?
       -i extra/transcripts.bed \
       > tsses.bed
 
-Gained H3K27ac
---------------
+:Question: How would you get 1kb upstream?
+
+Find gained H3K27ac
+-------------------
 It's not the best way to do it, but a first-pass way of getting differential
 regions is to do the intersection between conditions.
 
-We want to find the regions that are present in HFD, but not in chow. How would
-you do this?
-
+:Question: How would you find the H3K27ac present in HFD but not in chow?
 
 .. code-block:: bash
 
@@ -554,7 +658,7 @@ found very few differential regions. How many did we get?
 
 TSSes with gained H3K27ac
 -------------------------
-We have TSSes. We have gained H3K27ac. Now we can figure out which TSSes have
+We have TSSes. We have gained H3K27ac. Now we can figure out *which* TSSes have
 gained H3K27ac:
 
 .. code-block:: bash
@@ -577,7 +681,7 @@ installed on laptops.
 
     df <- read.table('GSE77625/GSE77625_chow-vs-HFD-deseq2_results.txt')
     gained <- read.table('tsses_with_gained_h3k4me1.bed')
-    closest_to_en <- read.table('closest_genes_to_enhancer_chow.bed')
+    closest_to_en <- read.table('closest_transcripts_to_enhancer_chow.bed')
 
     head(df)
     head(gained)

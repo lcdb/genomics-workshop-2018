@@ -14,7 +14,7 @@ General
 
 - Environment variables and ``$PATH``: https://www.datacamp.com/community/blog/environment-variable-data-science
 - More in-depth BEDTools tutorial: http://quinlanlab.org/tutorials/bedtools/bedtools.html
-
+- "Ten simple rules for biologists learning to program", from PLOS Comp Bio: http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005871
 R
 -
 
