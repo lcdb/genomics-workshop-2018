@@ -154,13 +154,32 @@ rule example_bedfiles:
         'data/extra/y.bed',
     run:
         import pybedtools
-        pybedtools.example_bedtool('a.bed').saveas(str(output[0]))
-        pybedtools.example_bedtool('b.bed').saveas(str(output[1]))
+        def bed4(x):
+            return pybedtools.create_interval_from_list(x[:4])
+
+        pybedtools.example_bedtool('a.bed').cut([0, 1, 2, 3]).saveas(str(output[0]))
+        pybedtools.example_bedtool('b.bed').cut([0, 1, 2]).saveas(str(output[1]))
+
+rule genes:
+    input:
+        'data/extra/transcripts.bed'
+    output:
+        'data/extra/genes.bed'
+    shell:
+        'bedtools merge -i {input} -c 4 -o distinct -S + '
+        '''| awk -F "\\t" '{{OFS="\\t"; print $1, $2, $3, $5, ".", $4}}' > collapsed.tmp '''
+        '&& bedtools merge -i {input} -c 4 -o distinct -S - '
+        '''| awk -F "\\t" '{{OFS="\\t"; print $1, $2, $3, $5, ".", $4}}' >> collapsed.tmp '''
+        '&& bedtools expand -i collapsed.tmp -c 4 > expanded.tmp '
+        '&& sort -k1,1 -k2n,2 expanded.tmp > {output} '
+        '&& rm collapsed.tmp expanded.tmp'
+
 
 rule packages:
     input:
         expand('data/GSE77625/{filename}', filename=bed_files.keys()),
         'data/extra/transcripts.bed',
+        'data/extra/genes.bed',
         'data/extra/mm10.chromsizes',
         'data/extra/x.bed',
         'data/extra/y.bed',

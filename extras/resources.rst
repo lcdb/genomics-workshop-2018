@@ -2,6 +2,8 @@ Genomics
 --------
 - RNA-seqlopedia https://rnaseq.uoregon.edu/
 - "Learn Bioinformatics in 100 hours": https://www.biostarhandbook.com/edu/course/1/
+- "Ten simple rules for biologists learning to program", from PLOS Comp Bio: http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005871
+- "Top N Reasons to do a PhD or post-doc in bioinformatics": https://caseybergman.wordpress.com/2012/07/31/top-n-reasons-to-do-a-ph-d-or-post-doc-in-bioinformaticscomputational-biology/
 - Material from University of Utah's Applied Computational Genomics course,
   taught by Aaron Quinlan (author of BEDTools):
   https://github.com/quinlan-lab/applied-computational-genomics
@@ -11,8 +13,8 @@ Genomics
 
 General
 -------
-
-- https://www.datacamp.com/community/blog/environment-variable-data-science
+- Environment variables and ``$PATH``: https://www.datacamp.com/community/blog/environment-variable-data-science
+- More in-depth BEDTools tutorial: http://quinlanlab.org/tutorials/bedtools/bedtools.html
 
 R
 -
