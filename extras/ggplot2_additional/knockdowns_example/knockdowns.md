@@ -150,6 +150,9 @@ it's much clearer that RpL32 is very low.
 my_theme <- theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
 
 ggplot(df.gfp) +
+
+    # was:
+    # geom_col(mapping=aes(x=site, y=avg, fill=ip))
     geom_col(mapping=aes(x=ip, y=avg, fill=ip)) +
     geom_errorbar(aes(x=ip, ymax=avg + stddev, ymin=avg - stddev)) +
 
@@ -329,7 +332,8 @@ my_theme <- theme(axis.text.x=element_text(color=NULL)) +
           panel.grid.minor=element_blank(),
           panel.grid.major=element_blank(),
           strip.text=element_text(size=12),
-          panel.border=element_blank(), panel.spacing=unit(1.5, "lines")
+          panel.border=element_blank(),
+          panel.spacing=unit(1.2, 'lines')
     )
 ```
 
@@ -377,10 +381,27 @@ ggplot(df) +
     # was:
     # facet_grid(ip~kd) +
     facet_grid(ip~site) +
-    my_theme
+    my_theme 
 ```
 
 ![](knockdowns_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+
+This one is good for exploration, since it allows the y axes to grow as much as
+they need in each row. So it's good for comparing across loci:
+
+```r
+ggplot(df) +
+    geom_col(mapping=aes(x=kd, y=avg, fill=ip)) +
+    geom_errorbar(aes(x=kd, ymax=avg + stddev, ymin=avg - stddev)) +
+    scale_fill_manual(values=cols) +
+
+    # was:
+    # facet_grid(ip~site) +
+    facet_grid(ip~site, scales='free_y') +
+    my_theme 
+```
+
+![](knockdowns_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
 
 Compare it with the original:
 
@@ -400,4 +421,4 @@ ggplot(df) +
     facet_wrap(~ip) + my_theme
 ```
 
-![](knockdowns_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+![](knockdowns_files/figure-html/unnamed-chunk-20-1.png)<!-- -->

@@ -291,7 +291,8 @@ my_theme <- theme(axis.text.x=element_text(color=NULL)) +
           panel.grid.minor=element_blank(),
           panel.grid.major=element_blank(),
           strip.text=element_text(size=12),
-          panel.border=element_blank(), panel.spacing=unit(1.5, "lines")
+          panel.border=element_blank(),
+          panel.spacing=unit(1.2, 'lines')
     )
 ```
 
@@ -332,7 +333,21 @@ ggplot(df) +
     # was:
     # facet_grid(ip~kd) +
     facet_grid(ip~site) +
-    my_theme
+    my_theme 
+```
+
+This one is good for exploration, since it allows the y axes to grow as much as
+they need in each row. So it's good for comparing across loci:
+```{r}
+ggplot(df) +
+    geom_col(mapping=aes(x=kd, y=avg, fill=ip)) +
+    geom_errorbar(aes(x=kd, ymax=avg + stddev, ymin=avg - stddev)) +
+    scale_fill_manual(values=cols) +
+
+    # was:
+    # facet_grid(ip~site) +
+    facet_grid(ip~site, scales='free_y') +
+    my_theme 
 ```
 
 Compare it with the original:
