@@ -498,6 +498,54 @@ A vector can also contain characters. Create another vector called `species` wit
    - Print the `combined` vector in the console, what looks different compared to the original vectors?
 
 
+
+Factors
++++++++
+
+A **factor** is a special type of vector that is used to **store categorical data**. Each unique category is referred to as a **factor level** (i.e. category = level). Factors are built on top of integer vectors such that each **factor level** is assigned an **integer value**, creating value-label pairs. 
+
+.. image:: images/factors_sm.png
+	:alt: factors
+
+Let's create a factor vector and explore a bit more.  We'll start by creating a character vector describing three different levels of expression:
+
+.. code-block:: r
+
+	expression <- c("low", "high", "medium", "high", "low", "medium", "high")
+
+Now we can convert this character vector into a *factor* using the `factor()` function:
+
+.. code-block:: r
+
+	expression <- factor(expression)
+
+
+So, what exactly happened when we applied the `factor()` function? 
+
+.. image:: images/factors_new.png
+	:alt: new factor
+
+The expression vector is categorical, in that all the values in the vector belong to a set of categories; in this case, the categories are `low`, `medium`, and `high`. By turning the expression vector into a factor, the **categories are assigned integers alphabetically**, with high=1, low=2, medium=3. This in effect assigns the different factor levels. You can view the newly created factor variable and the levels in the **Environment** window.
+
+.. image:: images/factors.png
+	:alt: Factor variables in environment
+
+**Exercises**
+
+Let's say that in our experimental analyses, we are working with three different sets of cells: normal, cells knocked out for geneA (a very exciting gene), and cells overexpressing geneA. We have three replicates for each celltype.
+
+.. code-block:: r
+
+	samplegroup <- c("CTL", "CTL", "CTL", "KO", "KO", "KO", "OE", "OE", "OE")
+
+
+1. Create a vector named `samplegroup` using the code above. This vector will contain nine elements: 3 control ("CTL") samples, 3 knock-out ("KO") samples, and 3 over-expressing ("OE") samples:
+
+
+2. Turn `samplegroup` into a factor data structure.
+
+
+
 Data Frame
 ++++++++++
 
