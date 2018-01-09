@@ -1,9 +1,6 @@
 Introduction to Command Line Environments
 =========================================
 
-GOALS: what is a command line?
-TIME: 120 minutes
-
 The Command Line Interface
 --------------------------
 
@@ -11,7 +8,7 @@ A terminal window is a type of "command line interface," a traditional method of
 
 The way to interact with a command line is straightforward:
 
-1. the user (that's you!) enters a command with the keyboard
+1. the user (that's you!) enters a (case-sensitive) command with the keyboard
 #. the user presses "Enter" on the keyboard
 #. the computer processes your request in a series of steps
 #. the results of the command (if any) are reported to the screen as text
@@ -105,7 +102,14 @@ Arguments to programs come in various formats. You might see things like:
 - --output my_filename.txt
 - --strand forward
 
-Different programs will expect input in different formats (and will typically generate grumpy error messages when they encounter inputs they don't understand). The stock programs you find in many terminal environments (like pwd and ls) will often accept flags of a standard format, but that's merely a convention, and bioinformatics tools will ignore these conventions the majority of the time. You will have to look up help documentation to figure out each program's usage.
+Different programs will expect input in different formats (and will typically generate grumpy error messages when they encounter inputs they don't understand). The stock programs you find in many terminal environments (like pwd and ls) will often accept flags of a standard format, but that's merely a convention, and bioinformatics tools will ignore these conventions the majority of the time. You will have to look up help documentation to figure out each program's usage. Remember: unless something explicitly says otherwise, assume everything is case-sensitive!
+
+Stopping a Program
+------------------
+
+It is extremely common to execute a command on the command line, and then want to stop it before it finishes. The way to do this is CTRL-C (the control key and "c" pressed simultaneously). That sends an interrupt command to the program, and most programs will respond by terminating as soon as they can.
+
+If this doesn't work and you're really enthusiastic about stopping the command, there is also the option to close the terminal you're using.
 
 GETTING HELP
 ============
@@ -154,9 +158,9 @@ First we need a place to work. You will recall that the shell has a current work
 
 .. code-block:: bash
 
-		mkdir experiment_29dec2017
+		mkdir experiment_10jan2018
 
-This is using the program "mkdir" to make a directory for you. You are requesting that the directory be called "experiment_29dec2017" and it will create this directory in the shell's current working directory. How can you confirm that this directory now exists?
+This is using the program "mkdir" to make a directory for you. You are requesting that the directory be called "experiment_10jan2018" and it will create this directory in the shell's current working directory. How can you confirm that this directory now exists?
 
 Navigating the filesystem
 -------------------------
@@ -165,7 +169,7 @@ If you want to change your current directory, you can do so as follows:
 
 .. code-block:: bash
 
-		cd experiment_29dec2017
+		cd experiment_10jan2018
 
 Now, what is your current working directory? What are the results when you list the contents of the current directory?
 
@@ -173,7 +177,7 @@ Now, what is your current working directory? What are the results when you list 
 Absolute versus relative paths
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-With the above command, you requested that you change your working directory to a directory called "experiment_29dec2017." You specified a "relative path" : the name of a directory relative to your current working directory.
+With the above command, you requested that you change your working directory to a directory called "experiment_10jan2018." You specified a "relative path" : the name of a directory relative to your current working directory.
 
 You can also specify "absolute paths" : the name of a directory relative to the very top of the filesystem. This is how the command pwd reports paths. How exactly this works varies based on the exact system you're using:
 
@@ -213,7 +217,27 @@ We used ls with no arguments earlier. What happens when you run
 
 	cd
 
-How can you fix it? Find your way back to experiment_29dec2017/
+How can you fix it? Find your way back to experiment_10jan2018/
+
+
+
+
+But why??
++++++++++
+
+If you're wondering why relative paths versus absolute paths matter, or why you would possibly want "./" as a way of fully specifying a path to where you currently are: the shell has a formal method of determining where it should find programs or files you're writing on the command line. BASH secretly searches a series of predetermined directories for each program you use: so for example, when you write
+
+.. code-block:: bash
+
+	ls -l
+
+BASH looks in certain system directories for a program called "ls." It does not usually expect a program called "ls" to exist in your current working directory. If you had such a program, you would have trouble actually running it, but you'd very cleverly write
+
+.. code-block:: bash
+
+	./ls -l
+
+and you would unambiguously tell BASH that you want the "ls" that is in your local working directory, not the one that is in the global search path.
 
 
 Retrieving data
@@ -225,7 +249,7 @@ Next, we want to get data. You have likely seen in publications that people have
 
 		wget https://raw.githubusercontent.com/lcdb/genomics-workshop-2018/master/data/Dm.CLAMP.3prRNA.bedGraph.gz
 
-"wget" is a program that downloads a file from the internet according to a URL provided to it. If the download is successful, it should save the file to the current working directory.
+"wget" is a program that downloads a file from the internet according to a URL provided to it. Think of it as the equivalent of "Right Click -> Save Link As" in a web browser. If the download is successful, it should save the file to the current working directory.
 
 Inspecting the data
 -------------------
@@ -370,7 +394,7 @@ I'm tired of writing out this horrible filename, even with bash completion! Let'
 
 		mv Dm.CLAMP.3prRNA.bedGraph my_data.bedGraph
 
-The program "mv" moves a file. You can use this to send a file to other folders, but in this case we've told it another filename (as with cp), so really we're just renaming the file, in this case to something shorter.
+The program "mv" moves a file. Think of this as "cp" followed by "rm." You can use this to send a file to other folders, but in this case we've told it another filename (as with cp), so really we're just renaming the file, in this case to something shorter.
 
 Moving files around, between computers
 --------------------------------------
@@ -417,6 +441,7 @@ The file we inspected with head/tail has a header line, followed by an empty lin
 As a first example, say we want all data from "chr2L" within this file. We can do the following:
 
 .. code-block:: bash
+
 		grep -w "chr2L" my_data.bedGraph
 
 What happened? 
@@ -428,16 +453,19 @@ Piping output between commands
 Far too much content just got emitted to the terminal. We'd like to just see the first few lines of output, to effectively preview the results of our command. To do this, we can "pipe" the output of grep into the head command:
 
 .. code-block:: bash
+
 		grep -w chr2L my_data.bedGraph | head
 		
 If instead we wanted to know how many results our grep command locates, we can instead pipe the results into wc:
 
 .. code-block:: bash
+
 		grep -w chr2L my_data.bedGraph | wc
 
 What happens if you instead do the following:
 
 .. code-block:: bash
+
 		grep -w chr2L my_data.bedGraph | head | wc
 
 
@@ -462,6 +490,7 @@ What happened? Inspect the contents of your current working directory.
 With the new file that lacks the header line, we can now try to run liftOver again:
 
 .. code-block:: bash
+
 		liftOver my_data_cleaned.bedGraph dm3ToDm6.over.chain.gz output.bedGraph failed.txt
 
 
