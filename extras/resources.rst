@@ -11,8 +11,8 @@ Genomics
 - The Harvard Chan Bioinformatics Core has several fantastic modules: https://github.com/hbctraining/main
 - Introduction to Computational Biology https://biodatascience.github.io/compbio
 
-General
--------
+BASH
+----
 - Environment variables and ``$PATH``: https://www.datacamp.com/community/blog/environment-variable-data-science
 - More in-depth BEDTools tutorial: http://quinlanlab.org/tutorials/bedtools/bedtools.html
 
@@ -32,5 +32,3 @@ Python
 - Introduction to the scientific computing libraries: http://www.scipy-lectures.org/
 - Code style guide: https://www.python.org/dev/peps/pep-0008/
 - Google’s Python Style guide: https://google.github.io/styleguide/pyguide.html
-
-
