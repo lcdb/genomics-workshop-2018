@@ -671,75 +671,8 @@ gained H3K27ac:
 
 Move to R
 ---------
-Back on your laptop, create a new R project directory. Move the data files from helix that you just created.
-This will likely be on laptops. So we need to set up file transfer from helix.
+Back on your laptop, create a new R project directory. Using FileZilla, move
+the newly-created files from Helix over to the R project directory.
 
-See https://hpc.nih.gov/docs/transfer.html, we should require Filezilla to be
-installed on laptops.
-
-.. code-block:: r
-
-    df <- read.table('GSE77625/GSE77625_chow-vs-HFD-deseq2_results.txt')
-    gained <- read.table('tsses_with_gained_h3k4me1.bed')
-    closest_to_en <- read.table('closest_transcripts_to_enhancer_chow.bed')
-
-    head(df)
-    head(gained)
-    head(closest_to_en)
-
-    df$gained <- FALSE
-    df$gained[rownames(df) %in% gained$V4] <- TRUE
-
-    df$closest_to_en <- FALSE
-    df$closest_to_en[rownames(df) %in% closest_to_en$V9] <- TRUE
-
-
-    df$up <- FALSE
-    df$dn <- FALSE
-    valid <- !is.na(df$padj)
-    sig <- valid & df$padj < 0.1
-    df[sig & df$log2FoldChange > 0, 'up'] <- TRUE
-    df[sig & df$log2FoldChange < 0, 'dn'] <- TRUE
-
-    table(df$up)
-    table(df$dn)
-    table(df$closest_to_en)
-
-    # which genes went up AND gained h3k4me1?
-    idx <- df$up & df$gained
-    rownames(df)[idx]
-
-    write.table(rownames(df)[idx], file='upregulated_that_gained_h3k4me1.txt', quote=FALSE, col.names=FALSE, row.names=FALSE)
-
-    # do we want to go here? Maybe just demonstrate; this is a whole 'nother
-    # workshop.
-    library(ggplot2)
-    ggplot(df) + aes(x=log2FoldChange) + geom_histogram(aes(y=..density..)) + facet_grid(gained~.)
-
-    # up- or down-regulated foldchanges are no different in gained or not
-    wilcox.test(df$log2FoldChange[df$gained & df$up], df$log2FoldChange[!df$gained & df$up])
-    wilcox.test(df$log2FoldChange[df$gained & df$dn], df$log2FoldChange[!df$gained & df$dn])
-
-    # both up- and downregulated genes are enriched for gain in H3K4me1.
-    #
-    fisher.test(
-        matrix(
-          c(
-             sum(df$up & df$gained),
-             sum(df$up & !df$gained),
-             sum(!df$up & df$gained),
-             sum(!df$up & !df$gained)
-          ),
-          nrow=2)
-    )
-
-    fisher.test(
-        matrix(
-          c(
-             sum(df$dn & df$gained),
-             sum(df$dn & !df$gained),
-             sum(!df$dn & df$gained),
-             sum(!df$dn & !df$gained)
-          ),
-          nrow=2)
-    )
+See https://hpc.nih.gov/docs/transfer.html for details, and see `05_chow_hfd.md
+<05_chow_hfd.md>`_ for the next steps.
