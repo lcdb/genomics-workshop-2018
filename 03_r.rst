@@ -255,8 +255,6 @@ Create an index with logical operators to select all values in the `age` vector 
 
 
 
-Wrangling Dataframes
-====================
 
 Dataframes
 ----------
