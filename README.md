@@ -10,4 +10,4 @@
 | 3   | Genomics tools: BEDTools ([``04_genomics-tools.rst``](04_genomics-tools.rst)          |
 | 3   | Genomics tools: integrate with R ([``05_chow_hfd.md``](05_chow_hfd.md))               |
 
-Additional resources ([``extras/resources.rst``](extras/resources.rst]))
+Additional resources ([``extras/resources.rst``](extras/resources.rst))
