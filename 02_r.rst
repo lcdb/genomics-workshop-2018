@@ -483,8 +483,8 @@ A vector can also contain characters. Create another vector called **species** w
 
 .. code-block:: r
 
-   species <- c("ecoli", "human", "corn")
-   species
+   		species <- c("ecoli", "human", "corn")
+   		species
 
 ---
 
