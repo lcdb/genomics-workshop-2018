@@ -30,11 +30,10 @@ BASH
 
 R
 -
-
-- http://r-statistics.co/Complete-Ggplot2-Tutorial-Part2-Customizing-Theme-With-R-Code.html#top
-- http://r4ds.had.co.nz/data-visualisation.html#statistical-transformations
-- https://www.datacamp.com/
-- http://www.burns-stat.com/pages/Tutor/R_inferno.pdf
+- `"swirl" <http://swirlstats.com/>`_, an interactive R tutorial 
+- Guide to `customizing ggplot2 plots <http://r-statistics.co/Complete-Ggplot2-Tutorial-Part2-Customizing-Theme-With-R-Code.html#top>`_
+-  `DataCamp <https://www.datacamp.com/>`_ has some R tutorials, and much more in-depth lessons if you pay
+- The `R Inferno <http://www.burns-stat.com/pages/Tutor/R_inferno.pdf>`_, a tour throught the ugly parts of R told in a format similar to Dante's Inferno
 - `Bioconductor for Genomic Data Science
   <https://kasperdanielhansen.github.io/genbioconductor/>`_, materials for
   a Coursera course. Great intro to the Bioconductor family of R packages.
