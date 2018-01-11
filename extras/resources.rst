@@ -19,11 +19,14 @@ Genomics
 - `Introduction to Computational Biology
   <https://biodatascience.github.io/compbio>`_, a course taught by Mike Love
   (author of DESeq2). Lots of great links in his reading list, as well.
+- More in-depth BEDTools tutorial: http://quinlanlab.org/tutorials/bedtools/bedtools.html
 
 BASH
 ----
+- Software Carpentry's `The Unix Shell <https://swcarpentry.github.io/shell-novice/>`_
+- Codecademy's `Learn the Command Line <https://www.codecademy.com/learn/learn-the-command-line>`_
+- The rather extensive `Bash guide <http://tldp.org/LDP/Bash-Beginners-Guide/html/>`_
 - Environment variables and ``$PATH``: https://www.datacamp.com/community/blog/environment-variable-data-science
-- More in-depth BEDTools tutorial: http://quinlanlab.org/tutorials/bedtools/bedtools.html
 
 R
 -
@@ -32,12 +35,13 @@ R
 - http://r4ds.had.co.nz/data-visualisation.html#statistical-transformations
 - https://www.datacamp.com/
 - http://www.burns-stat.com/pages/Tutor/R_inferno.pdf
+- `Bioconductor for Genomic Data Science
+  <https://kasperdanielhansen.github.io/genbioconductor/>`_, materials for
+  a Coursera course. Great intro to the Bioconductor family of R packages.
 
-Python
-------
-- Introductory course focusing on data scinece: https://www.datacamp.com/courses/intro-to-python-for-data-science
-- Interactive introduction to python: http://learnpython.org/
-- Introductory book on python 3: http://www.diveintopython3.net/
-- Introduction to the scientific computing libraries: http://www.scipy-lectures.org/
-- Code style guide: https://www.python.org/dev/peps/pep-0008/
-- Google’s Python Style guide: https://google.github.io/styleguide/pyguide.html
+UCSC Genome Browser
+-------------------
+- `UCSC Genome Browser training page <http://genome.ucsc.edu/training/index.html>`_
+- `Open Helix training videos <http://www.openhelix.com/ucsc>`_
+- UCSC `file formats page <http://genome.ucsc.edu/FAQ/FAQformat.html#format1>`_, with examples to try
+
