@@ -51,8 +51,31 @@ BED 4 with track lines::
     chr1  800  1000  C  0  +
 
 
-bedGraph: `bedGraph example <https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE69798&format=file>`_
+bedGraph. Note track line with ``type=bedGraph``, which is important::
 
+    track type=bedGraph name="bedGraph example"
+    chr19 49302000 49302300 -1.0
+    chr19 49302300 49302600 -0.75
+    chr19 49302600 49302900 -0.50
+    chr19 49302900 49303200 -0.25
+    chr19 49303200 49303500 0.0
+    chr19 49303500 49303800 0.25
+    chr19 49303800 49304100 0.50
+    chr19 49304100 49304400 0.75
+    chr19 49304400 49304700 1.00
+
+colored example::
+
+    track type=bedGraph name="bedgraph with color" description="BedGraph format" visibility=full color=200,100,0 altColor=0,100,200 priority=20
+    chr19 49302000 49302300 -1.0
+    chr19 49302300 49302600 -0.75
+    chr19 49302600 49302900 -0.50
+    chr19 49302900 49303200 -0.25
+    chr19 49303200 49303500 0.0
+    chr19 49303500 49303800 0.25
+    chr19 49303800 49304100 0.50
+    chr19 49304100 49304400 0.75
+    chr19 49304400 49304700 1.00
 
 Kinds of data you can't show
 ----------------------------
