@@ -1,6 +1,10 @@
 Genomics
 --------
 - `RNA-seqlopedia <https://rnaseq.uoregon.edu/>`_, an overview of RNA-seq from experimental design through analysis steps.
+- Bioconductor's `RNA-seq workflow
+  <https://www.bioconductor.org/help/workflows/rnaseqGene/>`_, walking you
+  through a complete example analysis using DESeq2, including PCA plots and
+  heatmaps.
 - `"Learn Bioinformatics in 100 hours"
   <https://www.biostarhandbook.com/edu/course/1/>`_, an adaptation of the
   Applied Bioinformatics course from Penn State. **Costs $25** for the course
@@ -20,6 +24,7 @@ Genomics
   <https://biodatascience.github.io/compbio>`_, a course taught by Mike Love
   (author of DESeq2). Lots of great links in his reading list, as well.
 - More in-depth BEDTools tutorial: http://quinlanlab.org/tutorials/bedtools/bedtools.html
+- BEDTools documentation: http://bedtools.readthedocs.io/en/latest/index.html
 
 BASH
 ----
