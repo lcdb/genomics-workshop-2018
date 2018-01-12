@@ -502,5 +502,5 @@ Move to R
 ---------
 To save time, we are skipping how to integrate these results with R. If you
 want to know how to do that, see the `full version <05_chw_hfd_full.md>`_.
-Otherwise, move on to the `minimal version <05_chow_hfd_minimal.Rmd>`_ to save
+Otherwise, move on to the `minimal version <05_chow_hfd_minimal.md>`_ to save
 time.
