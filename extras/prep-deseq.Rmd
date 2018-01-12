@@ -1,0 +1,43 @@
+This file takes the BEDTools output from `cmds-for-05.sh` and integrates it
+with the DESeq2 results as a new column, `gained_ac`. It also adds an
+additional `direction` column for up/down genes, and copies the rownames to
+a `gene` column.
+
+```{r}
+df <- read.table('12_jan_2018/data/deseq-results.txt')
+head(df)
+```
+
+Use boolean indexing to get the up/down/unchanged genes. There are NAs in this
+dataframe (due to the way DESeq2 reports its results) so we also need to get
+genes for which the padj is not NA.
+
+```{r}
+valid <- !is.na(df$padj)
+up <- valid & df$log2FoldChange > 0 & df$padj < 0.1
+dn <- valid & df$log2FoldChange < 0 & df$padj < 0.1
+df$direction <- 'un'
+df$direction[up] <- 'up'
+df$direction[dn] <- 'dn'
+```
+
+```{r}
+hits <- read.table('12_jan_2018/data/tsses_with_gained_h3k27ac.bed')
+head(hits)
+names(hits) <- c('chrom', 'start', 'stop', 'symbol', 'score', 'strand', 'transcript', 'gene')
+head(hits)
+```
+
+```{r}
+df_idx <- rownames(df) %in% hits$symbol
+df$gained_ac <- FALSE
+df$gained_ac[df_idx] <- TRUE
+head(df)
+sum(df$gained_ac)
+```
+
+
+```{r}
+df$gene <- rownames(df)
+write.table(df, file='bedtools-and-deseq.tsv', sep='\t', quote=FALSE)
+```
