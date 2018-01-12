@@ -174,11 +174,16 @@ rule genes:
         '&& sort -k1,1 -k2n,2 expanded.tmp > {output} '
         '&& rm collapsed.tmp expanded.tmp'
 
+rule demo_chromsizes:
+    output: 'data/extra/ex.chromsizes'
+    shell:
+        'echo "chr1	5000" > {output}'
 
 rule packages:
     input:
         expand('data/GSE77625/{filename}', filename=bed_files.keys()),
         'data/extra/transcripts.bed',
+        'data/extra/ex.chromsizes',
         'data/extra/genes.bed',
         'data/extra/mm10.chromsizes',
         'data/extra/x.bed',
