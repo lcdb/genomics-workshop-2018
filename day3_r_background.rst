@@ -246,7 +246,7 @@ While there is no equivalent `$` syntax to select a row by name, you can select 
 		rownames(metadata)
 		metadata[c("sample10", "sample12"),]
 
-deseq2
+
 Selecting using indices with logical operators
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
