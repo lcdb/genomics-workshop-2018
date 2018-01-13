@@ -25,6 +25,9 @@ Genomics
   (author of DESeq2). Lots of great links in his reading list, as well.
 - More in-depth BEDTools tutorial: http://quinlanlab.org/tutorials/bedtools/bedtools.html
 - BEDTools documentation: http://bedtools.readthedocs.io/en/latest/index.html
+- The workflow we wrote and use for LCDB: https://github.com/lcdb/lcdb-wf. This
+  runs RNA-seq and ChIP-seq analyses in an automated fashion on the biowulf
+  cluster.
 
 BASH
 ----
