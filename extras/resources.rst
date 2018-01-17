@@ -1,5 +1,6 @@
 Genomics
 --------
+- A 78-hr workshop on high-throughput sequencing analysis. We only had 12 hrs; if we had 2 wks we would have taught this: https://github.com/hbctraining/In-depth-NGS-Data-Analysis-Course
 - `RNA-seqlopedia <https://rnaseq.uoregon.edu/>`_, an overview of RNA-seq from experimental design through analysis steps.
 - Bioconductor's `RNA-seq workflow
   <https://www.bioconductor.org/help/workflows/rnaseqGene/>`_, walking you
