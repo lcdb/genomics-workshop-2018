@@ -48,6 +48,10 @@ R
   a Coursera course. Great intro to the Bioconductor family of R packages.
 - `DESeq2 tutorial <http://www.bioconductor.org/packages/3.7/bioc/vignettes/DESeq2/inst/doc/DESeq2.html>`_ from the authors of DESeq2.
 
+Statistics
+----------
+- Textbook, "Broadening Your Statistical Horizons": https://bookdown.org/roback/bookdown-bysh/
+
 UCSC Genome Browser
 -------------------
 - `UCSC Genome Browser training page <http://genome.ucsc.edu/training/index.html>`_
