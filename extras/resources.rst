@@ -52,6 +52,12 @@ Statistics
 ----------
 - Textbook, "Broadening Your Statistical Horizons": https://bookdown.org/roback/bookdown-bysh/
 
+Python
+------
+- Intro Python: https://realpython.com/
+- Learn Python the Hard Way: https://www.learnpythonthehardway.org/
+- Nicely-written guide to matplotlib: https://realpython.com/blog/python/python-matplotlib-guide/
+
 UCSC Genome Browser
 -------------------
 - `UCSC Genome Browser training page <http://genome.ucsc.edu/training/index.html>`_
